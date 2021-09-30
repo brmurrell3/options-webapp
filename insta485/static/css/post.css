@@ -1,0 +1,141 @@
+/* ////////////////////////////////////// <POST STYLES> //////////////////////////////////////////////////*/
+
+.post-wrapper {
+    /* padding-top: 10vh; */
+    /* border: 1px green dashed; */
+    padding-top: 3rem;
+}
+
+.singular-post {
+    display: flex;
+    /* border: 1px blue dashed; */
+    border: 1px solid rgb(224, 224, 224);
+    width: 50%;
+    /* background: white; */
+    background-color: aqua;
+    margin: auto;
+}
+
+.container {
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+    font-family: 'Source Sans Pro', sans-serif;
+    /* background-color: lightblue; */
+    display: flex;
+    align-items: center;
+    border-bottom: 0.0625rem solid rgb(224, 224, 224);
+}
+
+.container-bottom {
+    padding-top: 1.5rem;
+    padding-bottom: 0.5rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    font-family: 'Source Sans Pro', sans-serif;
+    /* background-color: lightblue; */
+    display: flex;
+    align-items: center;
+    /* border-bottom: 0.0625rem solid rgb(224, 224, 224); */
+    overflow: scroll;
+}
+
+.pfp {
+    display: flex;
+    align-items: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 2rem;
+    object-fit: cover;
+}
+
+.account {
+    font-family: 'Source Sans Pro', sans-serif;
+    font-size: 1rem;
+    width: 100%;
+    /* background-color: peachpuff; */
+    display: flex;
+    padding: 0.5rem;
+}
+
+.account a {
+    color: black;
+    text-decoration: none;
+}
+
+.username {
+    flex: 1;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    /* border: 1px dashed red; */
+}
+
+.time {
+    flex: 1;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    /* border: 1px dashed red; */
+    color: darkgray;
+}
+
+.time p {
+    color: grey;
+}
+
+
+/* picture */
+
+.likes {
+    padding-top: 0.5rem;
+    font-size: 1rem;
+}
+
+.each-comment {
+    padding-bottom: 0.25rem;
+    font-size: 0.9rem;
+    padding-top: 0.5rem;
+}
+
+.comments a {
+    text-decoration: none;
+    color: black;
+}
+
+.comment {
+    margin: 4px 0;
+    width: 70%;
+    padding: 12px 0;
+    box-sizing: border-box;
+    color: rgb(138, 138, 138);
+    border: none;
+    font-size: 1rem;
+}
+
+input[type=submit] {
+    background-color: white;
+    border: none;
+    color: #458eff;
+    text-decoration: none;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 400;
+}
+
+.post-right {
+    background-color: white;
+    padding: 0;
+    margin: 0;
+}
+
+.post-left {
+    background-color: white;
+}
+
+.post-image {
+    width: 32rem;
+    height: 32rem;
+    object-fit: cover;
+}

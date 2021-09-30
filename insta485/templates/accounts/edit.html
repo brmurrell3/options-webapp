@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <meta charset="UTF-8">
+    <title>insta485</title>
+    <!-- link the fonts here -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Grand+Hotel&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <!-- navigation -->
+    <header class="header">
+        <nav class="nav-bar">
+            <div class="logo home">
+                <a href="/"><img src="/static/images/name.png" alt="instagram logo"></a>
+                <a href="/" class="sitename"></a>
+            </div>
+            <div class="search">
+                <input class="nav-search" type="text" placeholder="Search">
+            </div>
+            <ul class="nav-links tab">
+                <li><a href="/explore/" class="thick">explore</a></li>
+                <li><a href="/users/{{logname}}/" class="thick">{{logname}}</a></li>
+                <!-- <li>
+                    <a href="/users/{{logname}}/">
+                        <img class="nav-pfp" src="{{account_picture}}" alt="{{logname}}-profile-picture">
+                    </a>
+                </li> -->
+            </ul>
+        </nav>
+    </header>
+    <div class="spacer"></div>
+
+    {{logname}}
+    <img src="{{filename}}" alt="user img">
+
+    <!-- login menu -->
+    <section class="create_account">
+        <div class="create_form">
+            <!-- DO NOT CHANGE THIS (aside from where we say 'FIXME') -->
+            <form action="/accounts/?target=/accounts/edit/" method="post" enctype="multipart/form-data">
+                <input type="file" name="file" accept="image/*" />
+                <input type="text" name="fullname" value="{{fullname}}" required/>
+                <input type="text" name="email" value="{{email}}" required/>
+                <input type="submit" name="update" value="submit" />
+                <input type="hidden" name="operation" value="edit_account" />
+            </form>
+            <div class="closer">
+                <a href="/accounts/password/"><strong>Change password</strong></a>
+                <a href="/accounts/delete/"><strong>Delete account</strong></a>
+            </div>
+        </div>
+
+    </section>
+</body>

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <meta charset="UTF-8">
+    <title>insta485</title>
+    <!-- link the fonts here -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Grand+Hotel&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+    <p>
+        <a href="/"> insta 485 </a>
+    </p>
+
+    <!-- login menu -->
+    <section class="create_account">
+        <div class="create_form">
+            <!-- DO NOT CHANGE THIS (aside from styling) -->
+            <form action="/accounts/?target=/" method="post" enctype="multipart/form-data">
+                <input type="file" name="file" required/>
+                <input type="text" name="fullname" required/>
+                <input type="text" name="username" required/>
+                <input type="text" name="email" required/>
+                <input type="password" name="password" required/>
+                <input type="submit" name="signup" value="sign up" />
+                <input type="hidden" name="operation" value="create" />
+            </form>
+            <div class="closer">
+                Have an account?<a href="/accounts/login/"><strong>Login</strong></a>
+            </div>
+        </div>
+    </section>
+</body>

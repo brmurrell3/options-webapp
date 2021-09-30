@@ -1,0 +1,29 @@
+/* ////////////////////////////////////// <FOLLOWERS STYLES> //////////////////////////////////////////////////*/
+
+.followers-container {
+    /* padding: 10rem; */
+    padding-top: 2rem;
+}
+
+.spacer {
+    padding: 0.5rem;
+}
+
+.header-pos {
+    padding-top:3rem;
+    padding-bottom: 1rem;
+    margin: auto;
+    width: 40%;
+    min-width: 40rem;
+}
+
+.followers-wrapper {
+    border-radius: 15px;
+    background-color: white;
+    border: 2px solid lightgrey;
+    margin: auto;
+    width: 40%;
+    min-width: 40rem;
+    font-size: 14px;
+}
+

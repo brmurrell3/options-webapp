@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="/static/css/connected.css">
+    <meta charset="UTF-8">
+    <title>insta485</title>
+    <!-- link the fonts here -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Grand+Hotel&display=swap" rel="stylesheet">
+
+</head>
+
+<body>
+
+    <h1> followers </h1>
+
+
+
+    <!-- navigation -->
+    <header class="header">
+        <nav class="nav-bar">
+            <div class="logo home">
+                <a href="/"><img src="/static/images/name.png" alt="instagram logo"></a>
+                <a href="/" class="sitename"></a>
+            </div>
+            <div class="search">
+                <input class="nav-search" type="text" placeholder="Search">
+            </div>
+            <ul class="nav-links tab">
+                <li><a href="/explore/" class="thick">explore</a></li>
+                <li><a href="/users/{{logname}}/" class="thick">{{logname}}</a></li>
+                <!-- <li>
+                    <a href="/users/{{logname}}/">
+                        <img class="nav-pfp" src="{{account_picture}}" alt="{{logname}}-profile-picture">
+                    </a>
+                </li> -->
+            </ul>
+        </nav>
+    </header>
+    <div class="spacer"></div>
+
+
+    {% for follower in followers %}
+    <div>
+
+        <img src="{{follower.user_img_url}}" alt="user image" style="width:50px;height:50px;">
+        <a href="/users/{{follower.username}}/"> {{follower.username}} </a> {% if follower.logname_follows_username == True and logname != follower.username %} following
+        <!-- DO NOT CHANGE THIS (aside from where we say 'FIXME') -->
+        <form action="/following/?target=/users/{{user}}/followers/" method="post" enctype="multipart/form-data">
+            <input type="submit" name="unfollow" value="unfollow" />
+            <input type="hidden" name="username" value="{{follower.username}}" />
+            <input type="hidden" name="operation" value="unfollow" />
+        </form>
+        {% endif %} {% if follower.logname_follows_username == False and logname != follower.username %} not following
+        <!-- DO NOT CHANGE THIS (aside from where we say 'FIXME') -->
+        <form action="/following/?target=/users/{{user}}/followers/" method="post" enctype="multipart/form-data">
+            <input type="submit" name="follow" value="follow" />
+            <input type="hidden" name="username" value="{{follower.username}}" />
+            <input type="hidden" name="operation" value="follow" />
+        </form>
+        {% endif %}
+
+    </div>
+    {% endfor %}
+
+</body>
+
+</html>

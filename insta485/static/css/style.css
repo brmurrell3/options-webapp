@@ -1,0 +1,154 @@
+html {
+    font-family: "Open Sans", Arial, sans-serif;
+
+    font-size: 100%;
+    box-sizing: border-box;
+    background-color: #FAFAFA;
+}
+
+*:focus {
+    outline: 0 !important;
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: inherit;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-size: 1rem;
+    line-height: 1.3;
+    min-height: 100vh;
+}
+
+
+/* ////////////////////////////////////// <NAV STYLES> //////////////////////////////////////////////////*/
+
+
+.thick {
+    font-weight: 350;
+    font-size: 1rem;
+    
+}
+
+li {
+    list-style: none;
+}
+
+nav {
+    padding: 0.3rem;
+    font-family: 'Source Sans Pro', sans-serif;
+    width: 100%;
+    backdrop-filter: blur(4px);
+    background: #FFFFFF;
+    /* background-color: lightgray; */
+    /* padding: 0.5rem; */
+    padding-left: 20vw;
+    padding-right: 20vw;
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid rgb(224, 224, 224);
+    vertical-align: center;
+    position: fixed;
+    top: 0;
+}
+
+nav a {
+    display: inline-block;
+    padding: 0.4rem 0.4rem;
+    text-decoration: none;
+    color: #333;
+    vertical-align: center;
+}
+
+.sitename {
+    font-family: 'Grand Hotel', cursive;
+    /* font-style:oblique; */
+    padding: 0;
+}
+
+
+/* nav positioning */
+
+.home {
+    flex: 1;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    /* border: 1px dashed green; */
+}
+
+/* .middle {} */
+
+.tab {
+    flex: 1;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    /* border: 1px dashed red; */
+}
+
+
+.logo img {
+    margin:0;
+    padding:0;
+    width: 7rem;
+    height: auto;
+    vertical-align: middle;
+    /* border: 1px red dashed; */
+}
+
+.logo img:hover {
+    opacity: 50%;
+}
+
+.search {
+    flex: 1;
+    /* border: 1px blue dashed; */
+    text-align:center;
+    
+    
+}
+
+.nav-search{
+    font-family: 'Source Sans Pro', sans-serif;
+    width: 60%;
+    vertical-align: center;
+    padding: 0.35rem 1.25rem;
+    box-sizing: border-box;
+    border-radius: 0.2rem;
+    border: 1px solid rgb(224, 224, 224);
+    text-align: center;
+    color: gray;
+    font-weight: 200;
+    background-color: #FAFAFA;
+
+
+}
+
+.nav-pfp {
+    width: 2rem;
+    max-height: 2rem;
+    height: auto;
+    margin: 0;
+    padding:0;
+    border-radius: 5rem;
+    padding: 0.2rem;
+    background-color: transparent;
+    vertical-align: middle;
+    object-fit: cover;
+
+}
+
+.nav-pfp:hover{
+    border: 1px solid;
+}
+
+.spacer {
+    padding:2rem;
+}

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="/static/css/login.css">
+    <meta charset="UTF-8">
+    <title>insta485</title>
+    <!-- link the fonts here -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Grand+Hotel&display=swap" rel="stylesheet">
+</head>
+
+<body class="login-body">
+    <!-- login menu -->
+    <div class="login-wrapper">
+        <div class="pain">
+            <section class="login">
+                <a href="/" class="login-logo">Instagram485</a>
+                <div class="login-username">
+                    <!-- DO NOT CHANGE THIS (aside from where we say 'FIXME') -->
+                    <form class="entry-wrapper" action="/accounts/?target=/" method="post" enctype="multipart/form-data">
+                        <input class="entry" type="text" placeholder="username" name="username" required/>
+                        <input class="entry" type="password" placeholder="password" name="password" required/>
+                        <input class="login-btn" type="submit" value="login" />
+                        <input type="hidden" name="operation" value="login" />
+                    </form>
+                </div>
+                <p class="closer">
+                    Don't have an account? <a href="/accounts/create/"><strong class="signup">Sign Up </strong></a>
+                </p>
+            </section>
+        </div>
+    </div>
+</body>

@@ -1,0 +1,5 @@
+#!/bin/bash
+# insta485db
+sqlite3 var/insta485.sqlite3 < sql/schema.sql
+sqlite3 var/insta485.sqlite3 < sql/data.sql
+sqlite3 var/insta485.sqlite3 < sql/test.sql

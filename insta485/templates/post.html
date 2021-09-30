@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="/static/css/post.css">
+    <meta charset="UTF-8">
+    <title>insta485</title>
+    <!-- link the fonts here -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Grand+Hotel&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <!-- navigation -->
+    <header class="header">
+        <nav class="nav-bar">
+            <div class="logo home">
+                <a href="/"><img src="/static/images/name.png" alt="instagram logo"></a>
+                <a href="/" class="sitename"></a>
+            </div>
+            <div class="search">
+                <input class="nav-search" type="text" placeholder="Search">
+            </div>
+            <ul class="nav-links tab">
+                <li><a href="/explore/" class="thick">explore</a></li>
+                <li><a href="/users/{{logname}}/" class="thick">{{logname}}</a></li>
+                <!-- <li>
+                    <a href="/users/{{logname}}/">
+                        <img class="nav-pfp" src="{{account_picture}}" alt="{{logname}}-profile-picture">
+                    </a>
+                </li> -->
+            </ul>
+        </nav>
+    </header>
+    <div class="spacer"></div>
+
+    <!-- post -->
+    <div class="post-wrapper">
+        <div class="singular-post">
+            <div class="post-left">
+                <img class="post-image" src="{{img_url}}" alt="post image">
+            </div>
+            <div class="post-right">
+                <div class="container">
+                    <a href="/users/{{owner}}/">
+                        <img class="pfp" src="{{owner_img_url}}" alt="{{owner}}-profile-picture">
+                    </a>
+                    <div class="account">
+                        <!-- template userpage link -->
+                        <a href="/users/{{owner}}/" class="username">
+                            <p><strong>{{owner}}</strong></p>
+                        </a>
+                        <a href="/posts/{{postid}}/" class="time">
+                            <p>{{timestamp}}</p>
+                        </a>
+                    </div>
+                </div>
+                <div class="container-bottom">
+                    <div class="interactions">
+                        <div class="like">
+                            {{likes}} {% if likes != 1 %} likes {% endif %} {% if likes == 1 %} like {% endif %} {% if button == 1 %}
+                            <form action="/likes/?target=/posts/{{postid}}/" method="post" enctype="multipart/form-data">
+                                <input type="hidden" name="operation" value="like" />
+                                <input type="hidden" name="postid" value="{{postid}}" />
+                                <input type="submit" name="like" value="like" />
+                            </form>
+                            {% endif %} {% if button == 0 %}
+                            <form action="/likes/?target=/posts/{{postid}}/" method="post" enctype="multipart/form-data">
+                                <input type="hidden" name="operation" value="unlike" />
+                                <input type="hidden" name="postid" value="{{postid}}" />
+                                <input type="submit" name="unlike" value="unlike" />
+                            </form>
+                            {% endif %}
+                        </div>
+                        <div class="comments">
+                            {% for comment in comments%}
+                            <a href="/users/{{comment.owner}}/">
+                                <p class="each-comment"><strong>{{comment.owner}}</strong> {{comment.text}}</p>
+                            </a>
+                            {% if logname == comment.owner %}
+                            <!-- DO NOT CHANGE THIS (aside from where we say 'FIXME') -->
+                            <form action="/comments/?target=/posts/{{postid}}/" method="post" enctype="multipart/form-data">
+                                <input type="hidden" name="operation" value="delete" />
+                                <input type="hidden" name="commentid" value="{{comment.commentid}}" />
+                                <input type="submit" name="uncomment" value="delete" />
+                            </form>
+                            {% endif %} {% endfor %}
+                        </div>
+                        <div class="reply">
+                            <!-- DO NOT CHANGE THIS (aside from where we say 'FIXME') -->
+                            <form action="/comments/?target=/posts/{{postid}}/" method="post" enctype="multipart/form-data">
+                                <input type="hidden" name="operation" value="create" />
+                                <input type="hidden" name="postid" value="{{postid}}" />
+                                <input class="comment" placeholder="Add a comment..." type="text" name="text" required/>
+                                <input type="submit" name="comment" value="comment" />
+                            </form>
+                        </div>
+
+                        {% if logname == owner %}
+                        <!-- DO NOT CHANGE THIS (aside from where we say 'FIXME') -->
+                        <form action="/posts/?target=/users/{{logname}}/" method="post" enctype="multipart/form-data">
+                            <input type="hidden" name="operation" value="delete" />
+                            <input type="hidden" name="postid" value="{{postid}}" />
+                            <input type="submit" name="delete" value="delete this post" />
+                        </form>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</body>
+
+</html>

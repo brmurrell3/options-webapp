@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <meta charset="UTF-8">
+    <title>insta485</title>
+    <!-- link the fonts here -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Grand+Hotel&display=swap" rel="stylesheet">
+</head>
+
+
+
+<body class="delete-body">
+    <p>
+        <a href="/"> insta 485 </a>
+    </p>
+
+    <p>
+        <a href="/explore/"> explore </a>
+        <a href="/users/{{logname}}/"> {{logname}} </a>
+    </p>
+
+    {{logname}}
+
+    <!-- DO NOT CHANGE THIS -->
+    <form action="/accounts/?target=/accounts/create/" method="post" enctype="multipart/form-data">
+        <input type="submit" name="delete" value="confirm delete account" />
+        <input type="hidden" name="operation" value="delete" />
+    </form>
+</body>

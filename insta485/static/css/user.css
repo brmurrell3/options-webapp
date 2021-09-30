@@ -1,0 +1,180 @@
+/* ////////////////////////////////////// <USER PAGE STYLES> //////////////////////////////////////////////////*/
+
+.container {
+    min-width: 40rem;
+    padding-left: 20vw;
+    padding-right: 20vw;
+    /* border: 1px dashed orange; */
+    font-family: "Open Sans", Arial, sans-serif;
+}
+
+.profile-info {
+    font-size: 1.25rem;
+    display: flex;
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+    /* border: 1px dashed pink; */
+    border-bottom: 1px solid rgb(224, 224, 224);
+}
+
+.pfp-container {
+    /* border: 1px dashed blue; */
+    flex: 2;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    align-items: center;
+    display: flex;
+    justify-content: center;
+}
+
+.user-pfp {
+    width: 10rem;
+    max-height: 10rem;
+    height: auto;
+    margin: 0;
+    padding: 0;
+    border-radius: 5rem;
+    background-color: transparent;
+    vertical-align: middle;
+    object-fit: cover;
+    border: 1px solid rgb(224, 224, 224);
+    image-rendering: auto;
+}
+
+.content-container {
+    /* border: 1px dashed red;  */
+    flex: 4;
+}
+
+
+/* ////////////////////////////////////// <TEXT INFO HEADER STYLES> //////////////////////////////////////////////////*/
+
+.row-one {
+    padding-top: 1rem;
+    display: flex;
+    /* border: 1px dashed steelblue; */
+}
+
+.profile-tag {
+    font-family: 'Source Sans Pro', sans-serif;
+    font-size: 1.8rem;
+    font-weight: 375;
+    vertical-align: middle;
+    padding-right: 1rem;
+}
+
+.edit {
+    padding-top: 0.1rem;
+}
+
+.edit-profile {
+    text-decoration: none;
+    border: 1px solid rgb(224, 224, 224);
+    border-radius: 0.2rem;
+    font-size: 0.85rem;
+    font-weight: bold;
+    color: #333;
+    margin: 0.5rem;
+    padding: 0.41rem;
+    vertical-align: middle;
+}
+
+input[type=submit] {
+    margin: 0;
+    padding: 0.35rem;
+    text-decoration: none;
+    border: 1px solid rgb(224, 224, 224);
+    border-radius: 0.2rem;
+    font-size: 0.85rem;
+    font-weight: bold;
+    color: #333;
+    vertical-align: middle;
+    background-color: transparent;
+}
+
+input[type=file]::file-selector-button {
+    margin: 0;
+    padding: 0.35rem;
+    text-decoration: none;
+    border: 1px solid rgb(224, 224, 224);
+    border-radius: 0.2rem;
+    font-size: 0.85rem;
+    font-weight: bold;
+    color: #333;
+    vertical-align: middle;
+    background-color: transparent;
+}
+
+input[type=file]::file-selector-button:hover {
+    opacity: 50%;
+}
+
+input[type=submit]:hover {
+    opacity: 50%;
+}
+
+.mod form {
+    margin: auto;
+}
+
+.make-post {
+    padding-top: 0.75rem;
+    text-align: center;
+    scale: 90%;
+}
+
+.row-two {
+    display: flex;
+    /* border: 1px dashed steelblue; */
+}
+
+.row-two a {
+    text-decoration: none;
+    padding: 1rem 2.5rem 1rem 0;
+    color: #333;
+    font-size: 1rem;
+}
+
+
+.row-two p {
+    text-decoration: none;
+    padding: 1rem 2.5rem 1rem 0;
+    color: #333;
+    font-size: 1rem;
+}
+
+.name {
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+.following-status {
+    text-decoration: none;
+    color: #333;
+    font-size: 0.9rem;
+}
+
+.grid-container {
+    padding-left: 19vw;
+    padding-right: 19vw;
+    /* border: 1px dashed orange; */
+    font-family: "Open Sans", Arial, sans-serif;
+}
+
+.boonk {
+    display: flex;
+    flex-wrap: wrap;
+    width: 100%
+}
+
+img {
+    padding: 0.75vw;
+    width: 20.5vw;
+    height: 20.5vw;
+    object-fit: cover;
+}
+
+.post img:hover{
+    filter: brightness(70%);
+}

@@ -1,0 +1,94 @@
+/* ////////////////////////////////////// <LOGIN STYLES> //////////////////////////////////////////////////*/
+.login-wrapper {
+    background-color: rgb(236, 236, 236);
+    width: 100%;
+    height: 100vh;
+}
+
+.pain {
+    padding-top: 10rem;
+}
+
+.login {
+    background: white;
+    border : 1px solid lightgrey;
+    padding-top: 2.5rem;
+    padding-left:2.5rem;
+    padding-right: 2.5rem;
+    padding-bottom: 4rem;
+
+    /* padding: 4.5rem 2.5rem; */
+    margin: auto;
+    border-radius: 0.25rem;
+    max-width: 22.5rem;
+    text-align: center;
+}
+
+.entry-wrapper {
+    margin: auto;
+}
+
+.closer {
+    align-items: center;
+    margin: auto;
+    padding-top: 1rem;
+    display: block;
+    font-family: 'Source Sans Pro', sans-serif;
+    font-size: 0.9rem;
+    text-decoration: none;
+}
+
+.signup strong {
+    text-decoration: none;
+    color:#458eff;
+
+}
+
+
+
+.login-username {
+    width: 100%;
+    max-width: rem;
+    /* background-color: pink; */
+}
+
+.login-logo {
+    display: block;
+    text-decoration: none;
+    color: black;
+    font-family: 'Grand Hotel', cursive;
+    font-size: 2.75rem;
+    /* font-style:oblique; */
+    padding: 1rem;
+    margin: auto;
+    padding-bottom:2rem;
+}
+
+/* Style inputs */
+input, select {
+    width: 100%;
+    padding: 12px 20px;
+    margin: 0.25rem 0;
+    display: inline-block;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+/* Style the submit button */
+input[type=submit] {
+    width: 100%;
+    background-color: #458eff;
+    color: white;
+    padding: 0.5rem 20px;
+    margin: 8px 0;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+/* Add a background color to the submit button on mouse-over */
+input[type=submit]:hover {
+    background-color: #45bbff;
+} 
