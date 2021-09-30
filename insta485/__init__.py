@@ -19,6 +19,6 @@ app.config.from_envvar('INSTA485_SETTINGS', silent=True)
 # circular import, which is naughty, but Flask was designed that way.
 # (Reference http://flask.pocoo.org/docs/patterns/packages/)  We're
 # going to tell pylint and pycodestyle to ignore this coding style violation.
-import insta485.api
+import insta485.api  # noqa: E402  pylint: disable=wrong-import-position
 import insta485.views  # noqa: E402  pylint: disable=wrong-import-position
 import insta485.model  # noqa: E402  pylint: disable=wrong-import-position
