@@ -1,64 +1,35 @@
 """REST API for posts."""
 import flask
+from flask import request
 import insta485
+
+
+@insta485.app.route('/api/v1/')
+def get_services():
+    """Return post on postid."""
+    
+    context = {
+        "comments": "/api/v1/comments/",
+        "likes": "/api/v1/likes/",
+        "posts": "/api/v1/posts/",
+        "url": "/api/v1/",
+    }
+    return flask.jsonify(**context)
 
 
 @insta485.app.route('/api/v1/posts/<int:postid_url_slug>/')
 def get_post(postid_url_slug):
-    """Return post on postid.
-
-
-
-    another one
-    {
-  "comments": [
-    {
-      "commentid": 1,
-      "lognameOwnsThis": true,
-      "owner": "awdeorio",
-      "ownerShowUrl": "/users/awdeorio/",
-      "text": "#chickensofinstagram",
-      "url": "/api/v1/comments/1/"
-    },
-    {
-      "commentid": 2,
-      "lognameOwnsThis": false,
-      "owner": "jflinn",
-      "ownerShowUrl": "/users/jflinn/",
-      "text": "I <3 chickens",
-      "url": "/api/v1/comments/2/"
-    },
-    {
-      "commentid": 3,
-      "lognameOwnsThis": false,
-      "owner": "michjc",
-      "ownerShowUrl": "/users/michjc/",
-      "text": "Cute overload!",
-      "url": "/api/v1/comments/3/"
-    }
-  ],
-  "created": "2021-05-06 19:52:44",
-  "imgUrl": "/uploads/9887e06812ef434d291e4936417d125cd594b38a.jpg",
-  "likes": {
-    "lognameLikesThis": true,
-    "numLikes": 1,
-    "url": "/api/v1/likes/6/"
-  },
-  "owner": "awdeorio",
-  "ownerImgUrl": "/uploads/e1a7c5c32973862ee15173b0259e3efdb6a391af.jpg",
-  "ownerShowUrl": "/users/awdeorio/",
-  "postShowUrl": "/posts/3/",
-  "postid": 3,
-  "url": "/api/v1/posts/3/"
-    }
-    """
+    """Return post on postid."""
     
-    if not 'username' in flask.session:
-        flask.abort(403)
-        
+    # if flask.request.authorization is None:
+    #    flask.abort(403)
+    connection = insta485.model.get_db()
+    
     context = {}
+    comments = {}
+    likes = {}
     
-    posts = (connection.execute(
+    post = (connection.execute(
         "SELECT DISTINCT "
         "posts.owner AS owner, "
         "posts.filename AS img_url, "
@@ -73,14 +44,54 @@ def get_post(postid_url_slug):
     )).fetchall()
     
     
+    comments = (connection.execute(
+        "SELECT "
+        "* "
+        "FROM comments "
+        "WHERE comments.postid=:id ",
+        {"id": postid_url_slug}
+    )).fetchall()
     
-    context = {
-        "age": "2017-09-28 04:33:28",
-        "img_url": "/uploads/122a7d27ca1d7420a1072f695d9290fad4501a41.jpg",
-        "owner": "awdeorio",
-        "owner_img_url": "/uploads/e1a7c5c32973862ee15173b0259e3efdb6a391af.jpg",
-        "owner_show_url": "/users/awdeorio/",
-        "postid": "/posts/{}/".format(postid_url_slug),
-        "url": flask.request.path,
-    }
+    
+    likes = (connection.execute(
+        "SELECT "
+        "* "
+        "FROM likes "
+        "WHERE likes.postid=:id ",
+        {"id": postid_url_slug}
+    )).fetchall()
+    
+    context['created'] = post[0]['timestamp']
+    context['imgUrl'] = '/uploads/{}'.format(post[0]['img_url'])
+    context['owner'] = post[0]['owner']
+    context['ownerImgUrl'] = '/uploads/{}'.format(post[0]['owner_img_url'])
+    context['ownerShowUrl'] = '/users/{}/'.format(post[0]['owner'])
+    context['postShowUrl'] = '/posts/{}/'.format(postid_url_slug)
+    context['postid'] = postid_url_slug
+    context['url'] = flask.request.path
+    context['comments'] = []
+    context['likes'] = {}
+    
+    for comment in comments:
+        temp = {}
+        temp['commentid'] = comment['commentid']
+        temp['owner'] = comment['owner']
+        temp['ownerShowUrl'] = '/users/{}/'.format(comment['owner'])
+        temp['text'] = comment['text']
+        temp['url'] = flask.request.path
+        
+        if flask.request.authorization.get("username", None) == comment['owner']:
+            temp['lognameOwnsThis'] = True
+        else:
+            temp['lognameOwnsThis'] = False
+            
+        context['comments'].append(temp)
+        
+    context['likes']['lognameLikesThis'] = False
+    for like in likes:
+        if str(flask.request.authorization['username']) == like['owner']:
+            context['likes']['lognameLikesThis'] = True
+    context['likes']['lognameLikesThis'] = len(likes)
+    context['likes']['url'] = flask.request.path
+    
     return flask.jsonify(**context)
