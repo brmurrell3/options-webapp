@@ -1,6 +1,6 @@
 """REST API for posts."""
-import flask
 import hashlib
+import flask
 from flask import request
 import insta485
 
@@ -8,20 +8,22 @@ import insta485
 def encrypt(base_input, salt):
     """Encrypt."""
     algorithm = 'sha512'
-    hash_obj = hashlib.new(algorithm)
+    hash_object = hashlib.new(algorithm)
     password_salted = salt + base_input
-    hash_obj.update(password_salted.encode('utf-8'))
-    password_hash = hash_obj.hexdigest()
+    hash_object.update(password_salted.encode('utf-8'))
+    password_hash = hash_object.hexdigest()
     password_db_string = "$".join([algorithm, salt, password_hash])
     return password_db_string
-    
-    
+
+
 def login(connection):
     """Check credentials."""
     if flask.request.authorization is not None:
         username = flask.request.authorization['username']
         password = flask.request.authorization['password']
-    elif request.form.get('username') is not None and request.form.get('password') is not None and request.form.get('username') == 'login':
+    elif (request.form.get('username') is not None
+            and request.form.get('password') is not None
+            and request.form.get('username') == 'login'):
         username = request.form.get('username')
         password = request.form.get('password')
     elif 'username' in flask.session:
@@ -36,7 +38,6 @@ def login(connection):
     # If username and password authentication fails, abort(403).
     if not data:  # the username search returned null
         return 'failed'
-    dbuser = data[0]['username']
     dbpass = data[0]['password']
     dbsalt = (dbpass.split('$'))[1]
     # If username and password authentication fails, abort(403).
@@ -55,8 +56,8 @@ def get_services():
         "url": "/api/v1/",
     }
     return flask.jsonify(**context), 200
-    
-    
+
+
 @insta485.app.route('/api/v1/posts/', methods=['GET'])
 def get_posts():
     """Return 10 newest posts."""
@@ -143,7 +144,8 @@ def get_post(postid_url_slug):
     for like in likes:
         if str(flask.request.authorization['username']) == like['owner']:
             context['likes']['lognameLikesThis'] = True
-            context['likes']['url'] = '/api/v1/likes/{}/'.format(like['likeid'])
+            context['likes']['url'] = '/api/v1/likes/{}/'.format(
+                        like['likeid'])
     context['likes']['numLikes'] = len(likes)
     return flask.jsonify(**context)
 
@@ -182,7 +184,8 @@ def add_like():
         return flask.jsonify(**context), 409
     connection.execute(
         "INSERT INTO likes (owner, postid) "
-        "VALUES (? , ?)", (flask.request.authorization['username'], postid_url_slug)
+        "VALUES (? , ?)",
+        (flask.request.authorization['username'], postid_url_slug)
     )
     total_likes = (connection.execute(
         "SELECT likeid "
@@ -195,6 +198,7 @@ def add_like():
 
 @insta485.app.route('/api/v1/likes/<int:likeid>/', methods=['DELETE'])
 def delete_like(likeid):
+    """Delete a like."""
     connection = insta485.model.get_db()
     context = {}
     if login(connection) == 'failed':
@@ -232,7 +236,8 @@ def add_comment():
         return flask.jsonify(**context), 404
     connection.execute(
         "INSERT INTO comments (owner, postid, text) "
-        "VALUES (? , ? , ?)", (flask.request.authorization['username'], postid_url_slug, text)
+        "VALUES (? , ? , ?)",
+        (flask.request.authorization['username'], postid_url_slug, text)
     )
     comment = (connection.execute(
         "SELECT "
@@ -254,6 +259,7 @@ def add_comment():
 
 @insta485.app.route('/api/v1/comments/<int:commentid>/', methods=['DELETE'])
 def delete_comment(commentid):
+    """Delete a comment."""
     connection = insta485.model.get_db()
     context = {}
     if login(connection) == 'failed':
