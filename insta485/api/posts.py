@@ -18,8 +18,16 @@ def encrypt(base_input, salt):
     
 def login(connection):
     """Check credentials."""
-    username = flask.request.authorization['username']
-    password = flask.request.authorization['password']
+    if flask.request.authorization is not None:
+        username = flask.request.authorization['username']
+        password = flask.request.authorization['password']
+    elif request.form.get('username') is not None and request.form.get('password') is not None and request.form.get('username') == 'login':
+        username = request.form.get('username')
+        password = request.form.get('password')
+    elif 'username' in flask.session:
+        return 'succeeded'
+    else:
+        return 'failed'
     data = (connection.execute(
         "SELECT DISTINCT username, password "
         "FROM users WHERE username=:temp ",
@@ -28,12 +36,13 @@ def login(connection):
     # If username and password authentication fails, abort(403).
     if not data:  # the username search returned null
         return 'failed'
+    dbuser = data[0]['username']
     dbpass = data[0]['password']
     dbsalt = (dbpass.split('$'))[1]
     # If username and password authentication fails, abort(403).
-    if dbpass != encrypt(password, dbsalt):
-        return 'failed'
-    return 'succeeded'
+    if dbpass == encrypt(password, dbsalt):
+        return 'succeeded'
+    return 'failed'
 
 
 @insta485.app.route('/api/v1/', methods=['GET'])
@@ -46,6 +55,18 @@ def get_services():
         "url": "/api/v1/",
     }
     return flask.jsonify(**context), 200
+    
+    
+@insta485.app.route('/api/v1/posts/', methods=['GET'])
+def get_posts():
+    """Return 10 newest posts."""
+    context = {}
+    connection = insta485.model.get_db()
+    if login(connection) == 'failed':
+        context['message'] = "Forbidden"
+        context['status_code'] = 403
+        return flask.jsonify(**context), 403
+    return "hi"
 
 
 @insta485.app.route('/api/v1/posts/<int:postid_url_slug>/', methods=['GET'])
@@ -53,7 +74,7 @@ def get_post(postid_url_slug):
     """Return post on postid."""
     context = {}
     connection = insta485.model.get_db()
-    if flask.request.authorization['username'] is None or login(connection) == 'failed':
+    if login(connection) == 'failed':
         context['message'] = "Forbidden"
         context['status_code'] = 403
         return flask.jsonify(**context), 403
@@ -133,7 +154,7 @@ def add_like():
     postid_url_slug = request.args.get('postid')
     connection = insta485.model.get_db()
     context = {}
-    if flask.request.authorization['username'] is None or login(connection) == 'failed':
+    if login(connection) == 'failed':
         context['message'] = "Forbidden"
         context['status_code'] = 403
         return flask.jsonify(**context), 403
@@ -176,7 +197,7 @@ def add_like():
 def delete_like(likeid):
     connection = insta485.model.get_db()
     context = {}
-    if flask.request.authorization['username'] is None or login(connection) == 'failed':
+    if login(connection) == 'failed':
         context['message'] = "Forbidden"
         context['status_code'] = 403
         return flask.jsonify(**context), 403
@@ -196,7 +217,7 @@ def add_comment():
     text = request_content['text']
     connection = insta485.model.get_db()
     context = {}
-    if flask.request.authorization['username'] is None or login(connection) == 'failed':
+    if login(connection) == 'failed':
         context['message'] = "Forbidden"
         context['status_code'] = 403
         return flask.jsonify(**context), 403
@@ -235,7 +256,7 @@ def add_comment():
 def delete_comment(commentid):
     connection = insta485.model.get_db()
     context = {}
-    if flask.request.authorization['username'] is None or login(connection) == 'failed':
+    if login(connection) == 'failed':
         context['message'] = "Forbidden"
         context['status_code'] = 403
         return flask.jsonify(**context), 403

@@ -6,3 +6,4 @@ from insta485.api.posts import add_like
 from insta485.api.posts import delete_like
 from insta485.api.posts import add_comment
 from insta485.api.posts import delete_comment
+from insta485.api.posts import get_posts
