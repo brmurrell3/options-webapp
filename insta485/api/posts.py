@@ -27,9 +27,12 @@ def login(connection):
         username = request.form.get('username')
         password = request.form.get('password')
     elif 'username' in flask.session:
-        return 'succeeded'
+        return flask.session['username']
     else:
-        return 'failed'
+        context = {}
+        context['message'] = "Forbidden"
+        context['status_code'] = 403
+        return context
     data = (connection.execute(
         "SELECT DISTINCT username, password "
         "FROM users WHERE username=:temp ",
@@ -42,52 +45,16 @@ def login(connection):
     dbsalt = (dbpass.split('$'))[1]
     # If username and password authentication fails, abort(403).
     if dbpass == encrypt(password, dbsalt):
-        return 'succeeded'
-    return 'failed'
-
-
-@insta485.app.route('/api/v1/', methods=['GET'])
-def get_services():
-    """Return general info."""
-    context = {
-        "comments": "/api/v1/comments/",
-        "likes": "/api/v1/likes/",
-        "posts": "/api/v1/posts/",
-        "url": "/api/v1/",
-    }
-    return flask.jsonify(**context), 200
-
-
-@insta485.app.route('/api/v1/posts/', methods=['GET'])
-def get_posts():
-    """Return 10 newest posts."""
+        return username
     context = {}
-    connection = insta485.model.get_db()
-    if login(connection) == 'failed':
-        context['message'] = "Forbidden"
-        context['status_code'] = 403
-        return flask.jsonify(**context), 403
-    return "hi"
-
-
-@insta485.app.route('/api/v1/posts/<int:postid_url_slug>/', methods=['GET'])
-def get_post(postid_url_slug):
+    context['message'] = "Forbidden"
+    context['status_code'] = 403
+    return context
+    
+    
+def post_info(connection, postid_url_slug, logname):
     """Return post on postid."""
     context = {}
-    connection = insta485.model.get_db()
-    if login(connection) == 'failed':
-        context['message'] = "Forbidden"
-        context['status_code'] = 403
-        return flask.jsonify(**context), 403
-    size = (connection.execute(
-        "SELECT "
-        "COUNT(postid) AS num "
-        "FROM posts "
-    )).fetchall()
-    if int(size[0]['num']) < int(postid_url_slug):
-        context['message'] = "Not found"
-        context['status_code'] = 404
-        return flask.jsonify(**context), 404
     comments = {}
     likes = {}
     post = (connection.execute(
@@ -134,7 +101,7 @@ def get_post(postid_url_slug):
         temp['ownerShowUrl'] = '/users/{}/'.format(comment['owner'])
         temp['text'] = comment['text']
         temp['url'] = '/api/v1/comments/{}/'.format(comment['commentid'])
-        if str(flask.request.authorization['username']) == comment['owner']:
+        if str(logname) == comment['owner']:
             temp['lognameOwnsThis'] = True
         else:
             temp['lognameOwnsThis'] = False
@@ -142,11 +109,107 @@ def get_post(postid_url_slug):
     context['likes']['lognameLikesThis'] = False
     context['likes']['url'] = None
     for like in likes:
-        if str(flask.request.authorization['username']) == like['owner']:
+        if str(logname) == like['owner']:
             context['likes']['lognameLikesThis'] = True
             context['likes']['url'] = '/api/v1/likes/{}/'.format(
                         like['likeid'])
     context['likes']['numLikes'] = len(likes)
+    return context
+
+
+@insta485.app.route('/api/v1/', methods=['GET'])
+def get_services():
+    """Return general info."""
+    context = {
+        "comments": "/api/v1/comments/",
+        "likes": "/api/v1/likes/",
+        "posts": "/api/v1/posts/",
+        "url": "/api/v1/",
+    }
+    return flask.jsonify(**context), 200
+
+
+@insta485.app.route('/api/v1/posts/', methods=['GET'])
+def get_posts():
+    """Return 10 newest posts."""
+    context = {}
+    connection = insta485.model.get_db()
+    logname = login(connection)
+    # checking if user is authenticated
+    if type(logname) is dict:
+        return flask.jsonify(**logname), 403
+    # getting all posts
+    all_posts = (connection.execute(
+        "SELECT "
+        "postid, "
+        "owner "
+        "FROM posts "
+        "ORDER BY postid DESC "
+    )).fetchall()
+    # who is logged in user following
+    following = (connection.execute(
+        "SELECT "
+        "following.username2 AS username "
+        "FROM following "
+        "WHERE username1=:user",
+        {"user": logname}
+    )).fetchall()
+    follow_list = []
+    follow_list.append(logname)
+    for follow in following:
+        follow_list.append(follow['username'])
+    # getting size and page from args
+    size = flask.request.args.get("size", default=10, type=int)
+    page = flask.request.args.get("page", default=1, type=int)
+    # error checking
+    if size < 0 or page < 0:
+        context['message'] = 'Bad Request'
+        context['status_code'] = 400
+        return flask.jsonify(**context), 400
+    # setting up context
+    context['results'] = []
+    context['url'] = flask.request.path
+    # if not no newer
+    if request.args.get('postid_lte') is not None:
+        no_newer = request.args.get('postid_lte')
+        for post in all_posts:
+            if (post['owner'] in follow_list and
+                len(context['results']) < int(size) and
+                int(post['postid']) <= int(no_newer)):
+                    post_context = post_info(connection, int(post['postid']), logname)
+                    post_context['url'] = '/api/v1/posts/{}/'.format(post['postid'])
+                    context['results'].append(post_context)
+    # if no newer
+    else:
+        for post in all_posts:
+            if post['owner'] in follow_list and len(context['results']) < int(size):
+                post_context = post_info(connection, int(post['postid']), logname)
+                post_context['url'] = '/api/v1/posts/{}/'.format(post['postid'])
+                context['results'].append(post_context)
+    # next url
+    if len(context['results']) < int(size):
+            context['next'] = ""
+    return flask.jsonify(**context)
+
+
+@insta485.app.route('/api/v1/posts/<int:postid_url_slug>/', methods=['GET'])
+def get_post(postid_url_slug):
+    "Get information about a post."
+    connection = insta485.model.get_db()
+    logname = login(connection)
+    if type(logname) is dict:
+        return flask.jsonify(**logname), 403
+    size = (connection.execute(
+        "SELECT "
+        "COUNT(postid) AS num "
+        "FROM posts "
+    )).fetchall()
+    if int(size[0]['num']) < int(postid_url_slug):
+        context = {}
+        context['message'] = "Not found"
+        context['status_code'] = 404
+        return flask.jsonify(**context), 404
+    context = post_info(connection, postid_url_slug, logname)
     return flask.jsonify(**context)
 
 
@@ -156,10 +219,9 @@ def add_like():
     postid_url_slug = request.args.get('postid')
     connection = insta485.model.get_db()
     context = {}
-    if login(connection) == 'failed':
-        context['message'] = "Forbidden"
-        context['status_code'] = 403
-        return flask.jsonify(**context), 403
+    logname = login(connection)
+    if type(logname) is dict:
+        return flask.jsonify(**logname), 403
     size = (connection.execute(
         "SELECT "
         "COUNT(postid) AS num "
@@ -178,14 +240,14 @@ def add_like():
     usernames = []
     for like in likes:
         usernames.append(like['owner'])
-    if str(flask.request.authorization['username']) in usernames:
+    if str(logname) in usernames:
         context['message'] = "Conflict"
         context['status_code'] = 409
         return flask.jsonify(**context), 409
     connection.execute(
         "INSERT INTO likes (owner, postid) "
         "VALUES (? , ?)",
-        (flask.request.authorization['username'], postid_url_slug)
+        (logname, postid_url_slug)
     )
     total_likes = (connection.execute(
         "SELECT likeid "
@@ -201,10 +263,9 @@ def delete_like(likeid):
     """Delete a like."""
     connection = insta485.model.get_db()
     context = {}
-    if login(connection) == 'failed':
-        context['message'] = "Forbidden"
-        context['status_code'] = 403
-        return flask.jsonify(**context), 403
+    logname = login(connection)
+    if type(logname) is dict:
+        return flask.jsonify(**logname), 403
     connection.execute(
         "DELETE FROM likes "
         "WHERE likeid=:likeid",
@@ -221,10 +282,9 @@ def add_comment():
     text = request_content['text']
     connection = insta485.model.get_db()
     context = {}
-    if login(connection) == 'failed':
-        context['message'] = "Forbidden"
-        context['status_code'] = 403
-        return flask.jsonify(**context), 403
+    logname = login(connection)
+    if type(logname) is dict:
+        return flask.jsonify(**logname), 403
     size = (connection.execute(
         "SELECT "
         "COUNT(postid) AS num "
@@ -237,7 +297,7 @@ def add_comment():
     connection.execute(
         "INSERT INTO comments (owner, postid, text) "
         "VALUES (? , ? , ?)",
-        (flask.request.authorization['username'], postid_url_slug, text)
+        (logname, postid_url_slug, text)
     )
     comment = (connection.execute(
         "SELECT "
@@ -246,7 +306,7 @@ def add_comment():
         "ORDER BY commentid DESC LIMIT 1 "
     )).fetchall()
     context['commentid'] = comment[0]['commentid']
-    if str(flask.request.authorization['username']) == comment[0]['owner']:
+    if str(logname) == comment[0]['owner']:
         context['lognameOwnsThis'] = True
     else:
         context['lognameOwnsThis'] = False
@@ -262,10 +322,9 @@ def delete_comment(commentid):
     """Delete a comment."""
     connection = insta485.model.get_db()
     context = {}
-    if login(connection) == 'failed':
-        context['message'] = "Forbidden"
-        context['status_code'] = 403
-        return flask.jsonify(**context), 403
+    logname = login(connection)
+    if type(logname) is dict:
+        return flask.jsonify(**logname), 403
     connection.execute(
         "DELETE FROM comments "
         "WHERE commentid=:commentid",
