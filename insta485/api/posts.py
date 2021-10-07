@@ -138,69 +138,72 @@ def get_posts():
     # checking if user is authenticated
     if type(logname) is dict:
         return flask.jsonify(**logname), 403
-        
     # getting size and page from args
-    size = flask.request.args.get("size", default=10, type=int)
-    page = flask.request.args.get("page", default=0, type=int)  # pages 0 indexed
+    size = flask.request.args.get('size', default=10, type=int)
+    page = flask.request.args.get('page', default=0, type=int)  # pages 0 indexed
     page_offset = page * size
-    
     # error checking
     if size < 0 or page < 0:
         context['message'] = 'Bad Request'
         context['status_code'] = 400
         return flask.jsonify(**context), 400
-
-    # who is logged in user following
-    following = (connection.execute(
-        "SELECT "
-        "following.username2 AS username "
-        "FROM following "
-        "WHERE username1=:user",
-        {"user": logname}
-    )).fetchall()
-    follow_list = []
-    follow_list.append(logname)
-    for follow in following:
-        follow_list.append(follow['username'])
-        
-    # getting all posts
-    all_posts = (connection.execute(
-        "SELECT "
-        "postid, "
-        "owner "
-        "FROM posts "
-        "ORDER BY postid DESC "
-    )).fetchall()
-
-    # setting up context
-    context['results'] = []
-    
-    # this doesn't work because it doesn't include the args if they exist
-    context['url'] = flask.request.path
-    
-    # if not no newer
-    if request.args.get('postid_lte') is not None:
-        no_newer = request.args.get('postid_lte')
-        for post in all_posts:
-            if (post['owner'] in follow_list and
-                len(context['results']) < int(size) and
-                int(post['postid']) <= int(no_newer)):
-                    post_context = post_info(connection, int(post['postid']), logname)
-                    post_context['url'] = '/api/v1/posts/{}/'.format(post['postid'])
-                    context['results'].append(post_context)
-    # if no newer
+    # getting all the posts, setting a limit if necessary
+    if request.args.get('postid_lte') is None:
+        all_posts = (connection.execute(
+            "SELECT "
+            "postid, "
+            "owner "
+            "FROM posts "
+            "WHERE owner = ? OR owner IN (SELECT username2 FROM following WHERE username1 = ?) "
+            "ORDER BY postid DESC "
+            "LIMIT ? OFFSET ? " ,
+            (logname, logname, size, page_offset)
+        )).fetchall()
     else:
-        for post in all_posts:
-            if post['owner'] in follow_list and len(context['results']) < int(size):
-                post_context = post_info(connection, int(post['postid']), logname)
-                post_context['url'] = '/api/v1/posts/{}/'.format(post['postid'])
-                context['results'].append(post_context)
-                
+        cutoff = int(request.args.get('postid_lte'))
+        all_posts = (connection.execute(
+            "SELECT "
+            "postid, "
+            "owner "
+            "FROM posts "
+            "WHERE (owner = ? OR owner IN (SELECT username2 FROM following WHERE username1 = ?)) "
+            "AND postid <= ? "
+            "ORDER BY postid DESC "
+            "LIMIT ? OFFSET ? " ,
+            (logname, logname, cutoff, size, page_offset)
+        )).fetchall()
+    # populating context dictionary with results
+    context['results'] = []
+    for post in all_posts:
+        post_context = post_info(connection, int(post['postid']), logname)
+        post_context['url'] = '/api/v1/posts/{}/'.format(post['postid'])
+        context['results'].append(post_context)
+    # calculating current url
+    context['url'] = flask.request.path
+    if len(request.args) > 0:
+        context['url'] = str(context['url'] + '?')
+        for arg in request.args:
+            context['url'] = context['url'] + arg + '=' + str(flask.request.args.get(arg))
+
+
+    # size stays the same
+    # page increases by one
+    # cutoff if not set equal to  # of still viewable posts
+    
     # next url
-    if len(context['results']) <= int(size):
-            context['next'] = ""
-        # don't know what next url is if not blank
-            
+    # if page_offset <= len(viewable):
+    context['next'] = ""
+    # else:
+    
+    #    context['next'] = flask.request.path
+    #    if len(request.args) > 0:
+    #        context['next'] = str(context['next'] + '?')
+    #    for arg in request.args:
+    #        if arg != 'postid_lte':
+    #            context['next'] = context['next'] + arg + '=' + str(flask.request.args.get(arg))
+    #        else:
+    #            context['next'] = context['next'] + arg + '=' + str(flask.request.args.get(arg) + 1)
+    
     return flask.jsonify(**context)
 
 
