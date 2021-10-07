@@ -136,7 +136,7 @@ def get_posts():
     connection = insta485.model.get_db()
     logname = login(connection)
     # checking if user is authenticated
-    if type(logname) is dict:
+    if isinstance(logname, dict):
         return flask.jsonify(**logname), 403
     # getting size and page from args
     size = flask.request.args.get('size', default=10, type=int)
@@ -150,7 +150,15 @@ def get_posts():
         return flask.jsonify(**context), 400
     # getting all the posts, setting a limit if necessary
     if request.args.get('postid_lte') is None:
-        all_posts = (connection.execute(
+        # setting the postid_lte since it doesn't exist
+        total_posts = (connection.execute(
+            "SELECT "
+            "MAX(postid) AS max "
+            "FROM posts "
+        )).fetchall()
+        lte = total_posts[0]['max']
+        # getting all the posts on the page
+        get_page = (connection.execute(
             "SELECT "
             "postid, "
             "owner "
@@ -162,8 +170,9 @@ def get_posts():
             (logname, logname, size, page_offset)
         )).fetchall()
     else:
-        cutoff = int(request.args.get('postid_lte'))
-        all_posts = (connection.execute(
+        lte = int(request.args.get('postid_lte'))
+        # getting all the posts on the page
+        get_page = (connection.execute(
             "SELECT "
             "postid, "
             "owner "
@@ -173,39 +182,31 @@ def get_posts():
             "AND postid <= ? "
             "ORDER BY postid DESC "
             "LIMIT ? OFFSET ? ",
-            (logname, logname, cutoff, size, page_offset)
+            (logname, logname, lte, size, page_offset)
         )).fetchall()
     # populating context dictionary with results
     context['results'] = []
-    for post in all_posts:
+    for post in get_page:
         post_context = post_info(connection, int(post['postid']), logname)
-        post_context['url'] = '/api/v1/posts/{}/'.format(post['postid'])
+        post_context['url'] = f'/api/v1/posts/{}/'.format(post['postid'])
         context['results'].append(post_context)
     # calculating current url
     context['url'] = flask.request.path
-    if len(request.args) > 0:
-        context['url'] = str(context['url'] + '?')
-        for arg in request.args:
-            context['url'] = (context['url'] + arg + '=' +
+    index = 0
+    for arg in request.args:
+        if index == 0:
+            context['url'] = (context['url'] + '?' + arg + '=' +
                               str(flask.request.args.get(arg)))
-
-    # size stays the same
-    # page increases by one
-    # cutoff if not set equal to  # of still viewable posts
-    # next url
-    # if page_offset <= len(viewable):
-    context['next'] = ""
-    # else:
-    #    context['next'] = flask.request.path
-    #    if len(request.args) > 0:
-    #        context['next'] = str(context['next'] + '?')
-    #    for arg in request.args:
-    #        if arg != 'postid_lte':
-    #            context['next'] = context['next'] + arg + '=' +
-    #                                   str(flask.request.args.get(arg))
-    #        else:
-    #            context['next'] = context['next'] + arg + '=' +
-    #                                   str(flask.request.args.get(arg) + 1)
+        else:
+            context['url'] = (context['url'] + '&' + arg + '=' +
+                              str(flask.request.args.get(arg)))
+        index += 1
+    # calculating the next url
+    if len(get_page) < size:
+        context['next'] = ""
+    else:
+        context['next'] = (flask.request.path + '?size=' + str(size) + '&page='
+                           + str(page + 1) + '&postid_lte=' + str(lte))
     return flask.jsonify(**context)
 
 
@@ -214,7 +215,7 @@ def get_post(postid_url_slug):
     """Get information about a post."""
     connection = insta485.model.get_db()
     logname = login(connection)
-    if type(logname) is dict:
+    if isinstance(logname, dict):
         return flask.jsonify(**logname), 403
     size = (connection.execute(
         "SELECT "
@@ -237,7 +238,7 @@ def add_like():
     connection = insta485.model.get_db()
     context = {}
     logname = login(connection)
-    if type(logname) is dict:
+    if isinstance(logname, dict):
         return flask.jsonify(**logname), 403
     size = (connection.execute(
         "SELECT "
@@ -279,9 +280,8 @@ def add_like():
 def delete_like(likeid):
     """Delete a like."""
     connection = insta485.model.get_db()
-    context = {}
     logname = login(connection)
-    if type(logname) is dict:
+    if isinstance(logname, dict):
         return flask.jsonify(**logname), 403
     connection.execute(
         "DELETE FROM likes "
@@ -300,7 +300,7 @@ def add_comment():
     connection = insta485.model.get_db()
     context = {}
     logname = login(connection)
-    if type(logname) is dict:
+    if isinstance(logname, dict):
         return flask.jsonify(**logname), 403
     size = (connection.execute(
         "SELECT "
@@ -339,7 +339,7 @@ def delete_comment(commentid):
     """Delete a comment."""
     connection = insta485.model.get_db()
     logname = login(connection)
-    if type(logname) is dict:
+    if isinstance(logname, dict):
         return flask.jsonify(**logname), 403
     connection.execute(
         "DELETE FROM comments "
