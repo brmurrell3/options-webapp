@@ -50,8 +50,8 @@ def login(connection):
     context['message'] = "Forbidden"
     context['status_code'] = 403
     return context
-    
-    
+
+
 def post_info(connection, postid_url_slug, logname):
     """Return post on postid."""
     context = {}
@@ -140,7 +140,8 @@ def get_posts():
         return flask.jsonify(**logname), 403
     # getting size and page from args
     size = flask.request.args.get('size', default=10, type=int)
-    page = flask.request.args.get('page', default=0, type=int)  # pages 0 indexed
+    page = flask.request.args.get('page',
+                                  default=0, type=int)  # pages 0 indexed
     page_offset = page * size
     # error checking
     if size < 0 or page < 0:
@@ -154,9 +155,10 @@ def get_posts():
             "postid, "
             "owner "
             "FROM posts "
-            "WHERE owner = ? OR owner IN (SELECT username2 FROM following WHERE username1 = ?) "
+            "WHERE owner = ? OR owner IN "
+            "(SELECT username2 FROM following WHERE username1 = ?) "
             "ORDER BY postid DESC "
-            "LIMIT ? OFFSET ? " ,
+            "LIMIT ? OFFSET ? ",
             (logname, logname, size, page_offset)
         )).fetchall()
     else:
@@ -166,10 +168,11 @@ def get_posts():
             "postid, "
             "owner "
             "FROM posts "
-            "WHERE (owner = ? OR owner IN (SELECT username2 FROM following WHERE username1 = ?)) "
+            "WHERE (owner = ? OR owner IN "
+            "(SELECT username2 FROM following WHERE username1 = ?)) "
             "AND postid <= ? "
             "ORDER BY postid DESC "
-            "LIMIT ? OFFSET ? " ,
+            "LIMIT ? OFFSET ? ",
             (logname, logname, cutoff, size, page_offset)
         )).fetchall()
     # populating context dictionary with results
@@ -183,33 +186,32 @@ def get_posts():
     if len(request.args) > 0:
         context['url'] = str(context['url'] + '?')
         for arg in request.args:
-            context['url'] = context['url'] + arg + '=' + str(flask.request.args.get(arg))
-
+            context['url'] = (context['url'] + arg + '=' +
+                              str(flask.request.args.get(arg)))
 
     # size stays the same
     # page increases by one
     # cutoff if not set equal to  # of still viewable posts
-    
     # next url
     # if page_offset <= len(viewable):
     context['next'] = ""
     # else:
-    
     #    context['next'] = flask.request.path
     #    if len(request.args) > 0:
     #        context['next'] = str(context['next'] + '?')
     #    for arg in request.args:
     #        if arg != 'postid_lte':
-    #            context['next'] = context['next'] + arg + '=' + str(flask.request.args.get(arg))
+    #            context['next'] = context['next'] + arg + '=' +
+    #                                   str(flask.request.args.get(arg))
     #        else:
-    #            context['next'] = context['next'] + arg + '=' + str(flask.request.args.get(arg) + 1)
-    
+    #            context['next'] = context['next'] + arg + '=' +
+    #                                   str(flask.request.args.get(arg) + 1)
     return flask.jsonify(**context)
 
 
 @insta485.app.route('/api/v1/posts/<int:postid_url_slug>/', methods=['GET'])
 def get_post(postid_url_slug):
-    "Get information about a post."
+    """Get information about a post."""
     connection = insta485.model.get_db()
     logname = login(connection)
     if type(logname) is dict:
@@ -336,7 +338,6 @@ def add_comment():
 def delete_comment(commentid):
     """Delete a comment."""
     connection = insta485.model.get_db()
-    context = {}
     logname = login(connection)
     if type(logname) is dict:
         return flask.jsonify(**logname), 403
