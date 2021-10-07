@@ -89,7 +89,7 @@ def post_info(connection, postid_url_slug, logname):
     context['owner'] = post[0]['owner']
     context['ownerImgUrl'] = '/uploads/{}'.format(post[0]['owner_img_url'])
     context['ownerShowUrl'] = '/users/{}/'.format(post[0]['owner'])
-    context['postShowUrl'] = '/posts/{}/'.format(postid_url_slug)
+    context['postShowUrl'] = f'/posts/{postid_url_slug}/'
     context['postid'] = postid_url_slug
     context['url'] = flask.request.path
     context['comments'] = []
@@ -188,7 +188,7 @@ def get_posts():
     context['results'] = []
     for post in get_page:
         post_context = post_info(connection, int(post['postid']), logname)
-        post_context['url'] = f'/api/v1/posts/{}/'.format(post['postid'])
+        post_context['url'] = '/api/v1/posts/{}/'.format(post['postid'])
         context['results'].append(post_context)
     # calculating current url
     context['url'] = flask.request.path
