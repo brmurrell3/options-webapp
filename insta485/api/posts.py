@@ -138,14 +138,18 @@ def get_posts():
     # checking if user is authenticated
     if type(logname) is dict:
         return flask.jsonify(**logname), 403
-    # getting all posts
-    all_posts = (connection.execute(
-        "SELECT "
-        "postid, "
-        "owner "
-        "FROM posts "
-        "ORDER BY postid DESC "
-    )).fetchall()
+        
+    # getting size and page from args
+    size = flask.request.args.get("size", default=10, type=int)
+    page = flask.request.args.get("page", default=0, type=int)  # pages 0 indexed
+    page_offset = page * size
+    
+    # error checking
+    if size < 0 or page < 0:
+        context['message'] = 'Bad Request'
+        context['status_code'] = 400
+        return flask.jsonify(**context), 400
+
     # who is logged in user following
     following = (connection.execute(
         "SELECT "
@@ -158,17 +162,22 @@ def get_posts():
     follow_list.append(logname)
     for follow in following:
         follow_list.append(follow['username'])
-    # getting size and page from args
-    size = flask.request.args.get("size", default=10, type=int)
-    page = flask.request.args.get("page", default=1, type=int)
-    # error checking
-    if size < 0 or page < 0:
-        context['message'] = 'Bad Request'
-        context['status_code'] = 400
-        return flask.jsonify(**context), 400
+        
+    # getting all posts
+    all_posts = (connection.execute(
+        "SELECT "
+        "postid, "
+        "owner "
+        "FROM posts "
+        "ORDER BY postid DESC "
+    )).fetchall()
+
     # setting up context
     context['results'] = []
+    
+    # this doesn't work because it doesn't include the args if they exist
     context['url'] = flask.request.path
+    
     # if not no newer
     if request.args.get('postid_lte') is not None:
         no_newer = request.args.get('postid_lte')
@@ -186,9 +195,12 @@ def get_posts():
                 post_context = post_info(connection, int(post['postid']), logname)
                 post_context['url'] = '/api/v1/posts/{}/'.format(post['postid'])
                 context['results'].append(post_context)
+                
     # next url
-    if len(context['results']) < int(size):
+    if len(context['results']) <= int(size):
             context['next'] = ""
+        # don't know what next url is if not blank
+            
     return flask.jsonify(**context)
 
 
