@@ -13,7 +13,8 @@
 </head>
 
 <body>
-    <!-- navigation -->
+    <!-- Navigation -->
+    <!-- Plain old HTML and jinja2 nav bar goes here -->
     <header class="header">
         <nav class="nav-bar">
             <div class="logo home">
@@ -34,72 +35,11 @@
             </ul>
         </nav>
     </header>
-    
     <div class="spacer"></div>
 
-    <!-- template post -->
-    {% for item in posts %}
-    <div class="post">
-        <div class="wrapper">
-            <div class="container">
-                <a href="/users/{{item.owner}}/">
-                    <img class="pfp" src="{{item.owner_img_url}}" alt="{{item.owner}}-profile-picture">
-                </a>
-                <div class="account">
-                    <!-- template userpage link -->
-                    <a href="/users/{{item.owner}}/" class="username">
-                        <p><strong>{{item.owner}}</strong></p>
-                    </a>
-                    <a href="/posts/{{item.postid}}/" class="time">
-                        <p>{{item.timestamp}}</p>
-                    </a>
-                </div>
-            </div>
-            <div class="picture">
-                <img src="{{item.img_url}}" alt="image">
-            </div>
-            <div class="container-bottom">
-                <p class="likes">
-                    {{item.likes}} {% if item.likes != 1 %} likes {% endif %} {% if item.likes == 1 %} like {% endif %}
-                </p>
-
-                <div class="like">
-                    {% if item.button == 1 %}
-                    <form action="/likes/?target=/" method="post" enctype="multipart/form-data">
-                        <input type="hidden" name="operation" value="like" />
-                        <input type="hidden" name="postid" value="{{item.postid}}" />
-                        <input type="submit" name="like" value="like" />
-                    </form>
-                    {% endif %} {% if item.button == 0 %}
-                    <form action="/likes/?target=/" method="post" enctype="multipart/form-data">
-                        <input type="hidden" name="operation" value="unlike" />
-                        <input type="hidden" name="postid" value="{{item.postid}}" />
-                        <input type="submit" name="unlike" value="unlike" />
-                    </form>
-                    {% endif %}
-                </div>
-
-                <div class="comments">
-                    {% for comment in item.comments %}
-                    <a href="/users/{{comment.owner}}/">
-                        <p class="each-comment"><strong>{{comment.owner}}</strong> {{comment.text}}</p>
-                    </a>
-                    {% endfor %}
-                </div>
-            </div>
-            <div class="reply">
-                <!-- DO NOT CHANGE THIS (aside from where we say 'FIXME') -->
-                <form action="/comments/?target=/" method="post" enctype="multipart/form-data">
-                    <input type="hidden" name="operation" value="create" />
-                    <input type="hidden" name="postid" value="{{item.postid}}" />
-                    <input class="comment" placeholder="Add a comment..." type="text" name="text" required/>
-                    <input type="submit" name="comment" value="comment" />
-                </form>
-            </div>
-        </div>
-    </div>
-    {% endfor %}
-    
+    <!-- We will tell React to use this div as it's entry-point for rendering 
+    **NOTE**: Make sure to include the "Loading ..." in the div below. 
+    This will display before our React code runs and modifies the DOM! -->
     <div id="reactEntry">
         Loading ...
     </div>
