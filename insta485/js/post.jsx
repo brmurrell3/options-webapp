@@ -8,7 +8,7 @@ class Post extends React.Component {
   constructor(props) {
     // Initialize mutable state
     super(props);
-    this.state = { imgUrl: '', owner: '' };
+    this.state = { imgUrl: '', owner: '', timeStamp: '', ownerUrl: '', ownerImgUrl: '', postShowUrl: ''};
   }
 
   componentDidMount() {
@@ -23,8 +23,12 @@ class Post extends React.Component {
       })
       .then((data) => {
         this.setState({
-          imgUrl: data.img_url,
-          owner: data.owner
+          imgUrl: data.imgUrl,
+          owner: data.owner,
+          timeStamp: data.created,
+          ownerUrl: data.ownerShowUrl,
+          ownerImgUrl: data.ownerImgUrl,
+          postShowUrl: data.postShowUrl
         });
       })
       .catch((error) => console.log(error));
@@ -33,16 +37,46 @@ class Post extends React.Component {
   render() {
     // This line automatically assigns this.state.imgUrl to the const variable imgUrl
     // and this.state.owner to the const variable owner
-    const { imgUrl, owner } = this.state;
+    const { imgUrl, owner, timeStamp, ownerUrl, ownerImgUrl, postShowUrl} = this.state;
 
     // Render number of post image and post owner
     return (
       <div className="post">
-        <img src={imgUrl} />
-        <p>
-          {owner}
-        </p>
+        <div className="wrapper">
+            <div className="container">
+                <a href={ownerUrl}>
+                    <img className="pfp" src={ownerImgUrl} alt="profile-picture"/>
+                </a>
+                <div className="account">
+                    <a href={ownerUrl} className="username">
+                        <p><strong>{owner}</strong></p>
+                    </a>
+                    <a href={postShowUrl} className="time">
+                        <p>{timeStamp}</p>
+                    </a>
+                </div>
+            </div>
+            <div className="picture">
+                <img src={imgUrl} alt="image"/>
+            </div>
+            <div className="container-bottom">
+              <form className="comment-form">
+                <input type="text" value=""/>
+              </form>
+              <button className="like-unlike-button">
+                like
+              </button>
+
+              <button className="delete-comment-button">
+                delete
+              </button>
+            </div>
+              
+
+        </div>
       </div>
+
+      
     );
   }
 }
