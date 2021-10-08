@@ -85,10 +85,10 @@ def post_info(connection, postid_url_slug, logname):
         {"id": postid_url_slug}
     )).fetchall()
     context['created'] = post[0]['created']
-    context['imgUrl'] = '/uploads/{}'.format(post[0]['img_url'])
+    context['imgUrl'] = '/uploads/' + str(post[0]['img_url'])
     context['owner'] = post[0]['owner']
-    context['ownerImgUrl'] = '/uploads/{}'.format(post[0]['owner_img_url'])
-    context['ownerShowUrl'] = '/users/{}/'.format(post[0]['owner'])
+    context['ownerImgUrl'] = '/uploads/' + str(post[0]['owner_img_url'])
+    context['ownerShowUrl'] = '/users/' + str(post[0]['owner']) + '/'
     context['postShowUrl'] = f'/posts/{postid_url_slug}/'
     context['postid'] = postid_url_slug
     context['url'] = flask.request.path
@@ -98,9 +98,9 @@ def post_info(connection, postid_url_slug, logname):
         temp = {}
         temp['commentid'] = comment['commentid']
         temp['owner'] = comment['owner']
-        temp['ownerShowUrl'] = '/users/{}/'.format(comment['owner'])
+        temp['ownerShowUrl'] = '/users/' + str(comment['owner']) + '/'
         temp['text'] = comment['text']
-        temp['url'] = '/api/v1/comments/{}/'.format(comment['commentid'])
+        temp['url'] = '/api/v1/comments/' + str(comment['commentid']) + '/'
         if str(logname) == comment['owner']:
             temp['lognameOwnsThis'] = True
         else:
@@ -111,8 +111,8 @@ def post_info(connection, postid_url_slug, logname):
     for like in likes:
         if str(logname) == like['owner']:
             context['likes']['lognameLikesThis'] = True
-            context['likes']['url'] = '/api/v1/likes/{}/'.format(
-                        like['likeid'])
+            context['likes']['url'] = '/api/v1/likes/' + str(
+                        like['likeid']) + '/'
     context['likes']['numLikes'] = len(likes)
     return context
 
@@ -188,7 +188,7 @@ def get_posts():
     context['results'] = []
     for post in get_page:
         post_context = post_info(connection, int(post['postid']), logname)
-        post_context['url'] = '/api/v1/posts/{}/'.format(post['postid'])
+        post_context['url'] = '/api/v1/posts/' + str(post['postid']) + '/'
         context['results'].append(post_context)
     # calculating current url
     context['url'] = flask.request.path
@@ -272,7 +272,7 @@ def add_like():
         "FROM likes "
     )).fetchall()
     context['likeid'] = len(total_likes)
-    context['url'] = '/api/v1/likes/{}/'.format(len(total_likes))
+    context['url'] = '/api/v1/likes/' + str(len(total_likes)) + '/'
     return flask.jsonify(**context), 201
 
 
@@ -328,7 +328,7 @@ def add_comment():
     else:
         context['lognameOwnsThis'] = False
     context['owner'] = comment[0]['owner']
-    context['ownerShowUrl'] = '/users/{}/'.format(comment[0]['owner'])
+    context['ownerShowUrl'] = '/users/' + str(comment[0]['owner']) + '/'
     context['text'] = comment[0]['text']
     context['url'] = flask.request.path
     return flask.jsonify(**context), 201

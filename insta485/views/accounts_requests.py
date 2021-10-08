@@ -171,10 +171,7 @@ def edit_account(connection):
     # the user’s photo, name and email.
     else:
         zfilename = zfileobj.filename
-        uuid_basename = "{stem}{suffix}".format(
-            stem=uuid.uuid4().hex,
-            suffix=pathlib.Path(zfilename).suffix
-        )
+        uuid_basename = f"{uuid.uuid4().hex}{pathlib.Path(zfilename).suffix}"
         # Save to disk
         path = insta485.app.config["UPLOAD_FOLDER"]/uuid_basename
         zfileobj.save(path)
@@ -275,10 +272,7 @@ def create(connection):
     afileobj = flask.request.files['file']
     afilename = afileobj.filename
 
-    uuid_basename = "{stem}{suffix}".format(
-        stem=uuid.uuid4().hex,
-        suffix=pathlib.Path(afilename).suffix
-    )
+    uuid_basename = f"{uuid.uuid4().hex}{pathlib.Path(afilename).suffix}"
 
     path = insta485.app.config["UPLOAD_FOLDER"]/uuid_basename
     afileobj.save(path)
