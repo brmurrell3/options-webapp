@@ -129,10 +129,7 @@ def edit_posts():
     if operation == 'create':
         fileobj = flask.request.files["file"]
         filename = fileobj.filename
-        uuid_basename = "{stem}{suffix}".format(
-            stem=uuid.uuid4().hex,
-            suffix=pathlib.Path(filename).suffix
-        )
+        uuid_basename = f"{uuid.uuid4().hex}{pathlib.Path(filename).suffix}"
         path = insta485.app.config["UPLOAD_FOLDER"]/uuid_basename
         fileobj.save(path)
         if os.stat(path).st_size == 0:
