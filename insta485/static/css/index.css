@@ -92,7 +92,6 @@
 
 .each-comment {
     padding-bottom: 0.3rem;
-
     font-size: 1rem;
 }
 
@@ -112,21 +111,28 @@
     align-items: center;
 }
 
-.reply {}
+.reply {
+    display: flex;
+}
 
 .comment {
-    margin: 8px 0;
-    width: 86%;
-    padding: 12px 20px;
+    /* flex: ; */
+    /* margin: 4px 0; */
+    width: 28rem;
+    padding-left: 0;
+    padding-top: 4px;
+    padding-bottom: 4px;
     box-sizing: border-box;
     color: rgb(138, 138, 138);
     border: none;
     font-size: 1rem;
 }
 
-input[type=submit] {
+button {
+    padding: 0.20rem;
+    border-radius: 0.25rem;
     background-color: white;
-    border: none;
+    border: 1px solid;
     color: #458eff;
     text-decoration: none;
     cursor: pointer;
