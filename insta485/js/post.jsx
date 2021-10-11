@@ -1,5 +1,6 @@
 import React from 'react';
-import PropTypes from 'prop-types';
+import PropTypes, { string } from 'prop-types';
+import moment from 'moment';
 
 
 // might need to make a put resquest here as the data gets updated
@@ -12,10 +13,6 @@ function trigger_like(data) {
     data.likes = data.likes + 1;
     data.self_like = true;
   }
-  console.log("entered");
-  console.log(data);
-
-
 }
 
 // determines what gets printed in the like/ unlike button
@@ -38,6 +35,30 @@ function sing_like_vs_plur_likes(likes_in) {
   }
 }
 
+// decides wether to have a delete button
+function serve_delete_button(lognameOwnsThis) {
+  if (lognameOwnsThis) {
+    return (
+      <button className="delete-comment-button">
+        delete
+      </button>
+    );
+  }
+}
+
+// displays the comments
+function display_comments(comments) {
+  const listItems = comments.map((d) => 
+  <div>
+    <a href={d.ownerShowUrl} className="each-comment" key={d.text}>
+      <strong>{d.owner}</strong> {d.text}
+    </a>
+    {serve_delete_button(d.lognameOwnsThis)}
+  </div>);
+
+  return (<div>{listItems}</div>);
+}
+
 class Post extends React.Component {
   /* Display number of image and post owner of a single post
    */
@@ -49,7 +70,8 @@ class Post extends React.Component {
     owner: '', timeStamp: '', 
     ownerUrl: '', ownerImgUrl: '', 
     postShowUrl: '', likes: '', 
-    lognameLikesThis: true};
+    lognameLikesThis: true, 
+    comments: []}
   }
   
 
@@ -65,30 +87,26 @@ class Post extends React.Component {
         return response.json();
       })
       .then((data) => {
+
         this.setState({
           imgUrl: data.imgUrl,
           owner: data.owner,
-          timeStamp: data.created,
+          timeStamp: moment(data.created).fromNow(),
           ownerUrl: data.ownerShowUrl,
           ownerImgUrl: data.ownerImgUrl,
           postShowUrl: data.postShowUrl,
           likes: data.likes.numLikes,
           lognameLikesThis: data.likes.lognameLikesThis,
+          comments: [...data.comments]
         });
       })
       .catch((error) => console.log(error));
-      console.log(this.state);
+      
 
   }
 
   // handles the click of the like button
   handleLike = () => {
-    console.log("endter :)");
-
-    this.setState ({
-    });
-    console.log(this.state);
-
     if (this.state.lognameLikesThis) {
       this.setState ({
         likes: this.state.likes - 1,
@@ -101,15 +119,24 @@ class Post extends React.Component {
         lognameLikesThis: true
       });
     }
-    // console.log("entered");
-    // console.log(data);
-  
+  }
+
+  // allows the double clicking of an image
+  // OPtional add a like animation
+  handleDoubleClick = () => {
+    if (this.state.lognameLikesThis) {}
+    else {
+      this.setState ({
+        likes: this.state.likes + 1,
+        lognameLikesThis: true
+      });
+    }
   }
 
   render() {
     // This line automatically assigns this.state.imgUrl to the const variable imgUrl
     // and this.state.owner to the const variable owner
-    const { imgUrl, owner, timeStamp, ownerUrl, ownerImgUrl, postShowUrl, likes, lognameLikesThis} = this.state;
+    const { imgUrl, owner, timeStamp, ownerUrl, ownerImgUrl, postShowUrl, likes, lognameLikesThis, comments} = this.state;
 
     // Render number of post image and post owner
     return (
@@ -128,7 +155,7 @@ class Post extends React.Component {
                     </a>
                 </div>
             </div>
-            <div className="picture">
+            <div className="picture" onDoubleClick={this.handleDoubleClick}>
                 <img src={imgUrl} alt="image"/>
             </div>
             <div className="container-bottom">
@@ -145,16 +172,13 @@ class Post extends React.Component {
               </div>
               {/* generated comments */}
               <div className="comments">
-
+                {display_comments(comments)}
               </div>
               {/* replies */}
               <div className="reply">
                 <form className="comment-form">
-                  <input className="comment" type="text" placeholder="type here" value=""/>
+                  <input className="comment" type="text" placeholder="type here"/>
                 </form>
-                <button className="delete-comment-button">
-                delete
-                </button>
               </div>
             </div>
         </div>
