@@ -268,11 +268,12 @@ def add_like():
         (logname, postid_url_slug)
     )
     total_likes = (connection.execute(
-        "SELECT likeid "
+        "SELECT "
+        "MAX(likeid) AS max "
         "FROM likes "
     )).fetchall()
-    context['likeid'] = len(total_likes)
-    context['url'] = '/api/v1/likes/' + str(len(total_likes)) + '/'
+    context['likeid'] = total_likes[0]['max']
+    context['url'] = '/api/v1/likes/' + str(total_likes[0]['max']) + '/'
     return flask.jsonify(**context), 201
 
 
