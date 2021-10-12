@@ -71,7 +71,10 @@ class Post extends React.Component {
     ownerUrl: '', ownerImgUrl: '', 
     postShowUrl: '', likes: '', 
     lognameLikesThis: true, postid: '', 
-    comments: [], likeid: ''}
+    comments: [], likeid: '', inputText: ''}
+
+    this.handleChange = this.handleChange.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
   }
   
 
@@ -100,17 +103,14 @@ class Post extends React.Component {
           postid: data.postid, comments: [...data.comments], 
           likeid: data.likes.url
         });
-        console.log("via init---" + this.state.likeid);
       })
       .catch((error) => console.log(error));
   }
 
   // handles the click of the like button
   handleLike = () => {
-    
     if (this.state.lognameLikesThis) {
       let deleter = this.state.likeid;
-      console.log("via delte url---" + deleter);
       fetch(deleter, {credentials: 'same-origin', method: 'DELETE'}) 
       .then((response) => {
         if (!response.ok) throw Error (response.statusText);
@@ -124,7 +124,6 @@ class Post extends React.Component {
     }
     else {
       let add_like_url = 'api/v1/likes/?postid=' + this.state.postid
-      console.log("via add like url---" + add_like_url);
       fetch(add_like_url, {credentials: 'same-origin', method: 'POST'}) // POST REQUEST
       .then((response) => {
         if (!response.ok) throw Error (response.statusText);
@@ -136,57 +135,75 @@ class Post extends React.Component {
           lognameLikesThis: true,
           likeid: '/api/v1/likes/' + data.likeid + '/'
         });
-        // console.log("via delte url---" this.state.likeid);
-        console.log(data);
       })
       .catch((error) => console.log(error));
     }
-    // Call REST API to get the post's information
-    const { url } = this.props;
-    fetch(url, { credentials: 'same-origin' })
-      .then((response) => {
-        if (!response.ok) throw Error(response.statusText);
-        return response.json();
-      })
-      .then((data) => {
-        this.setState({
-          
-        });
-        console.log(data);
-      })
-      .catch((error) => console.log(error));
   }
 
   // allows the double clicking of an image
   // OPtional add a like animation
   handleDoubleClick = () => {
-    console.log("entered the double click function");
     if (this.state.lognameLikesThis) {}
     else {
       let add_like_url = 'api/v1/likes/?postid=' + this.state.postid
-      console.log("via add like url---" + add_like_url);
       fetch(add_like_url, {credentials: 'same-origin', method: 'POST'}) // POST REQUEST
+        .then((response) => {
+          if (!response.ok) throw Error (response.statusText);
+          return response.json();
+        })
+        .then((data) => {
+          this.setState ({
+            likes: this.state.likes + 1,
+            lognameLikesThis: true,
+            likeid: '/api/v1/likes/' + data.likeid + '/'
+          });
+          // console.log("via delte url---" this.state.likeid);
+        })
+        .catch((error) => console.log(error));
+    }
+  }
+//////////////////////////////////////COMMENTS FUNCTIONS///////////////////////////////////////////
+  handleChange(event) {    
+    this.setState({inputText: event.target.value});  
+  }
+
+  handleSubmit(event) {
+    event.preventDefault();
+    let comments_url = 'api/v1/comments/?postid=' + this.state.postid;
+    fetch(comments_url, {
+      'Content-Type': 'application/json',
+      credentials: 'same-origin', 
+      method: 'POST',
+      body: JSON.stringify({
+        text: this.state.inputText})
+    }) // POST REQUEST
       .then((response) => {
         if (!response.ok) throw Error (response.statusText);
         return response.json();
       })
       .then((data) => {
         this.setState ({
-          likes: this.state.likes + 1,
-          lognameLikesThis: true,
-          likeid: '/api/v1/likes/' + data.likeid + '/'
+          comments: this.state.comments.concat({
+            'text': this.state.inputText, 
+            'owner': data.owner, 
+            'ownerShowUrl': data.ownerShowUrl,
+            'lognameOwnsThis': data.lognameOwnsThis,
+            'commentid': data.commentid,
+            'url': data.url
+          }), inputText: ''
         });
         // console.log("via delte url---" this.state.likeid);
         console.log(data);
       })
       .catch((error) => console.log(error));
-    }
   }
+
+
 
   render() {
     // This line automatically assigns this.state.imgUrl to the const variable imgUrl
     // and this.state.owner to the const variable owner
-    const { imgUrl, owner, timeStamp, ownerUrl, ownerImgUrl, postShowUrl, likes, lognameLikesThis, comments, postid} = this.state;
+    const { imgUrl, owner, timeStamp, ownerUrl, ownerImgUrl, postShowUrl, likes, lognameLikesThis, comments, postid, inputText} = this.state;
 
     // Render number of post image and post owner
     return (
@@ -212,13 +229,12 @@ class Post extends React.Component {
               {/* like and unlike button */}
               <div className="like">
                 <button className="like-unlike-button" onClick={this.handleLike} type="button">
-                {like_vs_unlike(lognameLikesThis)}
-                
+                  {like_vs_unlike(lognameLikesThis)}
                 </button>
-              {/* number of likes */}
-              <div className="likes">
-                {sing_like_vs_plur_likes(likes)}
-              </div>
+                {/* number of likes */}
+                <div className="likes">
+                  {sing_like_vs_plur_likes(likes)}
+                </div>
               </div>
               {/* generated comments */}
               <div className="comments">
@@ -226,8 +242,8 @@ class Post extends React.Component {
               </div>
               {/* replies */}
               <div className="reply">
-                <form className="comment-form">
-                  <input className="comment" type="text" placeholder="type here"/>
+                <form className="comment-form" onSubmit={this.handleSubmit}>
+                  <input className="comment" type="text" placeholder="Add a comment..." value={inputText} onChange={this.handleChange}/>
                 </form>
               </div>
             </div>
