@@ -273,7 +273,7 @@ def add_like():
         "FROM likes "
     )).fetchall()
     context['likeid'] = total_likes[0]['max']
-    context['url'] = '/api/v1/likes/' + str(total_likes[0]['max']) + '/'
+    context['url'] = flask.request.path
     return flask.jsonify(**context), 201
 
 
