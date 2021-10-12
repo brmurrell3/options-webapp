@@ -70,8 +70,8 @@ class Post extends React.Component {
     owner: '', timeStamp: '', 
     ownerUrl: '', ownerImgUrl: '', 
     postShowUrl: '', likes: '', 
-    lognameLikesThis: true, 
-    comments: []}
+    lognameLikesThis: true, postid: '', 
+    comments: [], likeid: ''}
   }
   
 
@@ -97,46 +97,96 @@ class Post extends React.Component {
           postShowUrl: data.postShowUrl,
           likes: data.likes.numLikes,
           lognameLikesThis: data.likes.lognameLikesThis,
-          comments: [...data.comments]
+          postid: data.postid, comments: [...data.comments], 
+          likeid: data.likes.url
         });
+        console.log("via init---" + this.state.likeid);
       })
       .catch((error) => console.log(error));
-      
-
   }
 
   // handles the click of the like button
   handleLike = () => {
+    
     if (this.state.lognameLikesThis) {
+      let deleter = this.state.likeid;
+      console.log("via delte url---" + deleter);
+      fetch(deleter, {credentials: 'same-origin', method: 'DELETE'}) 
+      .then((response) => {
+        if (!response.ok) throw Error (response.statusText);
+        // return response.json();
+      })
+      .catch((error) => console.log(error));
       this.setState ({
         likes: this.state.likes - 1,
         lognameLikesThis: false
       });
     }
     else {
-      this.setState ({
-        likes: this.state.likes + 1,
-        lognameLikesThis: true
-      });
+      let add_like_url = 'api/v1/likes/?postid=' + this.state.postid
+      console.log("via add like url---" + add_like_url);
+      fetch(add_like_url, {credentials: 'same-origin', method: 'POST'}) // POST REQUEST
+      .then((response) => {
+        if (!response.ok) throw Error (response.statusText);
+        return response.json();
+      })
+      .then((data) => {
+        this.setState ({
+          likes: this.state.likes + 1,
+          lognameLikesThis: true,
+          likeid: '/api/v1/likes/' + data.likeid + '/'
+        });
+        // console.log("via delte url---" this.state.likeid);
+        console.log(data);
+      })
+      .catch((error) => console.log(error));
     }
+    // Call REST API to get the post's information
+    const { url } = this.props;
+    fetch(url, { credentials: 'same-origin' })
+      .then((response) => {
+        if (!response.ok) throw Error(response.statusText);
+        return response.json();
+      })
+      .then((data) => {
+        this.setState({
+          
+        });
+        console.log(data);
+      })
+      .catch((error) => console.log(error));
   }
 
   // allows the double clicking of an image
   // OPtional add a like animation
   handleDoubleClick = () => {
+    console.log("entered the double click function");
     if (this.state.lognameLikesThis) {}
     else {
-      this.setState ({
-        likes: this.state.likes + 1,
-        lognameLikesThis: true
-      });
+      let add_like_url = 'api/v1/likes/?postid=' + this.state.postid
+      console.log("via add like url---" + add_like_url);
+      fetch(add_like_url, {credentials: 'same-origin', method: 'POST'}) // POST REQUEST
+      .then((response) => {
+        if (!response.ok) throw Error (response.statusText);
+        return response.json();
+      })
+      .then((data) => {
+        this.setState ({
+          likes: this.state.likes + 1,
+          lognameLikesThis: true,
+          likeid: '/api/v1/likes/' + data.likeid + '/'
+        });
+        // console.log("via delte url---" this.state.likeid);
+        console.log(data);
+      })
+      .catch((error) => console.log(error));
     }
   }
 
   render() {
     // This line automatically assigns this.state.imgUrl to the const variable imgUrl
     // and this.state.owner to the const variable owner
-    const { imgUrl, owner, timeStamp, ownerUrl, ownerImgUrl, postShowUrl, likes, lognameLikesThis, comments} = this.state;
+    const { imgUrl, owner, timeStamp, ownerUrl, ownerImgUrl, postShowUrl, likes, lognameLikesThis, comments, postid} = this.state;
 
     // Render number of post image and post owner
     return (
