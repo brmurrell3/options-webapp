@@ -1,9 +1,9 @@
 html {
     font-family: "Open Sans", Arial, sans-serif;
-
     font-size: 100%;
     box-sizing: border-box;
     background-color: #FAFAFA;
+    min-width: 40rem;
 }
 
 *:focus {
@@ -29,11 +29,9 @@ body {
 
 /* ////////////////////////////////////// <NAV STYLES> //////////////////////////////////////////////////*/
 
-
 .thick {
     font-weight: 350;
     font-size: 1rem;
-    
 }
 
 li {
@@ -83,6 +81,7 @@ nav a {
     /* border: 1px dashed green; */
 }
 
+
 /* .middle {} */
 
 .tab {
@@ -93,10 +92,9 @@ nav a {
     /* border: 1px dashed red; */
 }
 
-
 .logo img {
-    margin:0;
-    padding:0;
+    margin: 0;
+    padding: 0;
     width: 7rem;
     height: auto;
     vertical-align: middle;
@@ -110,12 +108,10 @@ nav a {
 .search {
     flex: 1;
     /* border: 1px blue dashed; */
-    text-align:center;
-    
-    
+    text-align: center;
 }
 
-.nav-search{
+.nav-search {
     font-family: 'Source Sans Pro', sans-serif;
     width: 60%;
     vertical-align: center;
@@ -127,8 +123,6 @@ nav a {
     color: gray;
     font-weight: 200;
     background-color: #FAFAFA;
-
-
 }
 
 .nav-pfp {
@@ -136,19 +130,18 @@ nav a {
     max-height: 2rem;
     height: auto;
     margin: 0;
-    padding:0;
+    padding: 0;
     border-radius: 5rem;
     padding: 0.2rem;
     background-color: transparent;
     vertical-align: middle;
     object-fit: cover;
-
 }
 
-.nav-pfp:hover{
+.nav-pfp:hover {
     border: 1px solid;
 }
 
 .spacer {
-    padding:2rem;
+    padding: 2rem;
 }

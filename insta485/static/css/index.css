@@ -12,7 +12,7 @@
     /* padding: 50px; */
     margin: auto;
     width: 37.5%;
-    min-width: 30rem;
+    min-width: 35rem;
     font-size: 14px;
 }
 
@@ -85,27 +85,26 @@
 }
 
 .likes {
-    padding-top: 0.5rem;
-    padding-bottom: 0.5rem;
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
     font-size: 1rem;
 }
 
 .each-comment {
     padding-bottom: 0.3rem;
-    font-size: 1rem;
+    font-size: 0.9rem;
 }
 
-.comments {
-    padding-top: 0.5rem;
-}
+.comments {}
 
 .comments a {
+    color: rgb(37, 36, 36);
     text-decoration: none;
-    color: black;
+    word-wrap: break-word;
 }
 
 .container-bottom {
-    padding: 0.75rem;
+    padding: 1rem;
     font-family: 'Source Sans Pro', sans-serif;
     /* background-color: lightblue; */
     align-items: center;
@@ -115,29 +114,49 @@
     display: flex;
 }
 
+.comment-form {
+    padding-top: 0.5rem;
+    width: 100%;
+}
+
 .comment {
     /* flex: ; */
     /* margin: 4px 0; */
-    padding-top: 0.5rem;
-    padding-bottom: 0.25rem;
-    width: 28rem;
+    width: 100%;
     padding-left: 0;
     padding-top: 4px;
     padding-bottom: 4px;
     box-sizing: border-box;
     color: rgb(138, 138, 138);
     border: none;
-    font-size: 1rem;
+    font-size: 0.9rem;
 }
 
-button {
-    padding: 0.25rem;
-    border-radius: 0;
+button {}
+
+.like-unlike-button {
+    padding: 0.15rem 0.5rem;
+    border-radius: 0.25rem;
+    border: 1px #458eff solid;
     background-color: white;
-    border: 0px solid;
     color: #458eff;
     text-decoration: none;
     cursor: pointer;
-    font-size: 1rem;
+    font-size: 0.75rem;
     font-weight: 400;
+}
+
+.delete-comment-button {
+    vertical-align: center;
+    padding-top: 0.125rem;
+    padding-right: 0.4rem;
+    border-radius: 0;
+    background-color: white;
+    border: 0px solid;
+    color: #c6cbcf;
+    text-decoration: none;
+    cursor: pointer;
+    font-size: 0.75rem;
+    font-weight: 500;
+    float: right;
 }

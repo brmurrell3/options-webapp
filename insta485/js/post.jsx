@@ -16,39 +16,34 @@ function trigger_like(data) {
 }
 
 // determines what gets printed in the like/ unlike button
-function like_vs_unlike(self_like_in) {
-  if (self_like_in) {
-    return 'unlike';
-  }
-  else {
-    return 'like';
-  }
-}
+// function like_vs_unlike(self_like_in) {
+//   if (self_like_in) {
+//     return 'unlike';
+//   }
+//   else {
+//     return 'like';
+//   }
+// }
 
 // prints like vs likes depending on ct
-function sing_like_vs_plur_likes(likes_in) {
-  if (likes_in === 1) {
-    return likes_in + ' like';
-  }
-  else {
-    return likes_in + ' likes';
-  }
-}
+// function sing_like_vs_plur_likes(likes_in) {
+//   if (likes_in === 1) {
+//     return likes_in + ' like';
+//   }
+//   else {
+//     return likes_in + ' likes';
+//   }
+// }
 
 // decides wether to have a delete button
 function serve_delete_button(lognameOwnsThis) {
   if (lognameOwnsThis) {
     return (
-      <button className="delete-comment-button" onClick={handleDeleteComment}>
+      <button className="delete-comment-button">
         delete
       </button>
     );
   }
-}
-
-// deletes the comment
-function handleDeleteComment(data) {
-  data.handleDeleteComment;
 }
 
 // displays the comments
@@ -79,7 +74,6 @@ class Post extends React.Component {
     comments: [], likeid: '', inputText: ''}
 
     this.handleChange = this.handleChange.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
   }
   
 
@@ -111,6 +105,68 @@ class Post extends React.Component {
       })
       .catch((error) => console.log(error));
   }
+
+//////////////////////////////////////////////helper functions//////////////////////////////////////////////
+  // determines the text on the like button
+  like_vs_unlike = (self_like_in) => {
+    if (self_like_in) {
+      return 'unlike';
+    }
+    else {
+      return 'like';
+    }
+  }
+
+  // determines wordage attached to num likes
+  sing_like_vs_plur_likes = (likes_in) => {
+    if (likes_in === 1) {
+      return likes_in + ' like';
+    }
+    else {
+      return likes_in + ' likes';
+    }
+  }
+
+  // decides wether to have a delete button
+  serve_delete_button = (lognameOwnsThis, commentid) => {
+    if (lognameOwnsThis) {
+      return (
+        <button className="delete-comment-button" onClick={() => this.deleteComment(commentid)}>
+          delete
+        </button>
+      );
+    }
+  }
+
+ // displays the comments
+ display_comments = (comments) => {
+  const listItems = comments.map((d) => 
+  <div className="each-comment">
+     
+    <a href={d.ownerShowUrl} key={d.commentid}>
+      <strong>{d.owner}</strong>&nbsp;{d.text}
+    </a>
+    {this.serve_delete_button(d.lognameOwnsThis, d.commentid)}
+  </div>);
+
+  return (<div>{listItems}</div>);
+}
+
+// removes vals from arr_in
+shrink_array = (arr_in, commentid_in) => {
+  for (var i = arr_in.length - 1; i >= 0; --i) {
+    if (arr_in[i].commentid == commentid_in) {
+        arr_in.splice(i,1);
+    }
+  }
+}
+
+
+
+
+
+//////////////////////////////////////////////like/unlike functions//////////////////////////////////////////////
+  
 
 
   // handles the click of the like button
@@ -173,7 +229,7 @@ class Post extends React.Component {
     this.setState({inputText: event.target.value});  
   }
 
-  handleSubmit(event) {
+  createComment = (event) => {
     event.preventDefault();
     let comments_url = 'api/v1/comments/?postid=' + this.state.postid;
     fetch(comments_url, {
@@ -204,19 +260,23 @@ class Post extends React.Component {
       .catch((error) => console.log(error));
   }
 
-  handleDeleteComment = () => {
-    let deleter = this.state.likeid;
+  // deletes a comment
+  deleteComment = (commentid_in) => {
+    console.log("entered here");
+    console.log(commentid_in);
+    let deleter = '/api/v1/comments/' + commentid_in + '/';
       fetch(deleter, {credentials: 'same-origin', method: 'DELETE'}) 
       .then((response) => {
         if (!response.ok) throw Error (response.statusText);
         // return response.json();
       })
       .catch((error) => console.log(error));
+      this.shrink_array(this.state.comments, commentid_in);
       this.setState ({
-        likes: this.state.likes - 1,
-        lognameLikesThis: false
+        comments: this.state.comments
       });
   }
+
 
 
 
@@ -249,20 +309,20 @@ class Post extends React.Component {
               {/* like and unlike button */}
               <div className="like">
                 <button className="like-unlike-button" onClick={this.handleLike} type="button">
-                  {like_vs_unlike(lognameLikesThis)}
+                  {this.like_vs_unlike(lognameLikesThis)}
                 </button>
                 {/* number of likes */}
                 <div className="likes">
-                  {sing_like_vs_plur_likes(likes)}
+                  {this.sing_like_vs_plur_likes(likes)}
                 </div>
               </div>
               {/* generated comments */}
               <div className="comments">
-                {display_comments(comments)}
+                {this.display_comments(comments)}
               </div>
               {/* replies */}
               <div className="reply">
-                <form className="comment-form" onSubmit={this.handleSubmit}>
+                <form className="comment-form" onSubmit={this.createComment}>
                   <input className="comment" type="text" placeholder="Add a comment..." value={inputText} onChange={this.handleChange}/>
                 </form>
               </div>
