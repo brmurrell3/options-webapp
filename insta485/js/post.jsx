@@ -49,7 +49,7 @@ function serve_delete_button(lognameOwnsThis) {
 // displays the comments
 function display_comments(comments) {
   const listItems = comments.map((d) => 
-  <div>
+  <div key={d.commentid}>
     <a href={d.ownerShowUrl} className="each-comment" key={d.text}>
       <strong>{d.owner}</strong> {d.text}
     </a>
@@ -141,7 +141,7 @@ class Post extends React.Component {
  // displays the comments
  display_comments = (comments) => {
   const listItems = comments.map((d) => 
-  <div className="each-comment">
+  <div key={d.commentid} className="each-comment">
      
     <a href={d.ownerShowUrl} key={d.commentid}>
       <strong>{d.owner}</strong>&nbsp;{d.text}
@@ -287,7 +287,7 @@ shrink_array = (arr_in, commentid_in) => {
 
     // Render number of post image and post owner
     return (
-      <div className="post">
+      <div key={postid} className="post">
         <div className="wrapper">
             <div className="container">
                 <a href={ownerUrl}>
