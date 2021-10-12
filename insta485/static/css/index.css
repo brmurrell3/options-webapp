@@ -87,7 +87,7 @@
 .likes {
     padding-top: 0.75rem;
     padding-bottom: 0.75rem;
-    font-size: 1rem;
+    font-size: 0.9rem;
 }
 
 .each-comment {
@@ -148,7 +148,7 @@ button {}
 
 .delete-comment-button {
     vertical-align: center;
-    padding-top: 0.125rem;
+    padding-top: 0.1rem;
     padding-right: 0.4rem;
     border-radius: 0;
     background-color: white;
@@ -159,4 +159,8 @@ button {}
     font-size: 0.75rem;
     font-weight: 500;
     float: right;
+}
+
+.preload {
+    margin: auto;
 }
