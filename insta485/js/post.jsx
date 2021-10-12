@@ -39,11 +39,16 @@ function sing_like_vs_plur_likes(likes_in) {
 function serve_delete_button(lognameOwnsThis) {
   if (lognameOwnsThis) {
     return (
-      <button className="delete-comment-button">
+      <button className="delete-comment-button" onClick={handleDeleteComment}>
         delete
       </button>
     );
   }
+}
+
+// deletes the comment
+function handleDeleteComment(data) {
+  data.handleDeleteComment;
 }
 
 // displays the comments
@@ -106,6 +111,7 @@ class Post extends React.Component {
       })
       .catch((error) => console.log(error));
   }
+
 
   // handles the click of the like button
   handleLike = () => {
@@ -196,6 +202,20 @@ class Post extends React.Component {
         console.log(data);
       })
       .catch((error) => console.log(error));
+  }
+
+  handleDeleteComment = () => {
+    let deleter = this.state.likeid;
+      fetch(deleter, {credentials: 'same-origin', method: 'DELETE'}) 
+      .then((response) => {
+        if (!response.ok) throw Error (response.statusText);
+        // return response.json();
+      })
+      .catch((error) => console.log(error));
+      this.setState ({
+        likes: this.state.likes - 1,
+        lognameLikesThis: false
+      });
   }
 
 
