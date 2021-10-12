@@ -297,8 +297,6 @@ def add_comment():
     """Add comment."""
     postid_url_slug = request.args.get('postid')
     request_content = request.get_json(force=True)
-    print("DFSDFDFSDFSFSDFsfsfskhudugfhfdskhkhfdhfdshsfhfsdhfdshjfsdhfshdjfhsjdhsfdhj")
-    print(request.get_json(force=True))
     text = request_content['text']
     connection = insta485.model.get_db()
     context = {}
