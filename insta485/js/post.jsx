@@ -145,7 +145,7 @@ class Post extends React.Component {
     const listItems = comments.map((d) => (
       <div key={d.commentid} className="each-comment">
         <a href={d.ownerShowUrl} key={d.commentid}>
-          <strong>{d.owner}</strong>&nbsp;{d.text}
+          <strong>{d.owner}</strong>{` ${d.text}`}
         </a>
         {this.serve_delete_button(d.lognameOwnsThis, d.commentid)}
       </div>
