@@ -93,7 +93,7 @@ class Post extends React.Component {
         this.setState({
           imgUrl: data.imgUrl,
           owner: data.owner,
-          timeStamp: moment(data.created).fromNow(),
+          timeStamp: moment.utc(data.created).fromNow(),
           ownerUrl: data.ownerShowUrl,
           ownerImgUrl: data.ownerImgUrl,
           postShowUrl: data.postShowUrl,

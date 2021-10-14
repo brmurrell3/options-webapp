@@ -6,6 +6,6 @@ import Batch from "./middle";
 // {/* <Post url="/api/v1/posts/1/" />, */}
 ReactDOM.render(
   // Insert the post component into the DOM
-  <Batch url="/api/v1/posts/" />,
+  <Batch url="/api/v1/posts/?size=10" />,
   document.getElementById("reactEntry")
 );
