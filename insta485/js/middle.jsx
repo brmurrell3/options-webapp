@@ -1,40 +1,17 @@
-import React from "react";
-import PropTypes, { string } from "prop-types";
-// import moment from "moment";
-import Post from "./post";
-import InfiniteScroll from "react-infinite-scroll-component";
-
-
-
+import React from 'react';
+import PropTypes from 'prop-types';
+import InfiniteScroll from 'react-infinite-scroll-component';
+import Post from './post';
 
 class Batch extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { links: [], next:''};
+    this.state = { links: [], next: '' };
   }
-
-  fetchData = () => {
-    console.log(this.state.next);
-    fetch(this.state.next, { credentials: "same-origin", method: "GET" })
-      .then((response) => {
-        if (!response.ok) throw Error(response.statusText);
-        return response.json();
-      })
-      .then((data) => {
-        console.log(data.results);
-        this.setState({
-          links: this.state.links.concat(data.results),
-          next: data.next
-        });
-      })
-      .catch((error) => console.log(error));
-  }
-
-
 
   componentDidMount() {
     const { url } = this.props;
-    fetch(url, { credentials: "same-origin", method: "GET" })
+    fetch(url, { credentials: 'same-origin', method: 'GET' })
       .then((response) => {
         if (!response.ok) throw Error(response.statusText);
         return response.json();
@@ -43,30 +20,42 @@ class Batch extends React.Component {
         console.log(data);
         this.setState({
           links: data.results,
-          next: data.next
+          next: data.next,
         });
       })
       .catch((error) => console.log(error));
   }
 
-  dummy() {
-    
-
+  fetchData() {
+    const { next, links } = this.state;
+    fetch(next, { credentials: 'same-origin', method: 'GET' })
+      .then((response) => {
+        if (!response.ok) throw Error(response.statusText);
+        return response.json();
+      })
+      .then((data) => {
+        console.log(data.results);
+        this.setState({
+          links: links.concat(data.results),
+          next: data.next,
+        });
+      })
+      .catch((error) => console.log(error));
   }
 
   render() {
-    const { links, next } = this.state;
+    const { links } = this.state;
     return (
       <InfiniteScroll
-      dataLength={links.length}
-      next={this.fetchData}
-      hasMore={true}
-      loader={<h4 style={{ textAlign: 'center', color: "lightslategray" }}>Loading...</h4>}
-      endMessage={
-        <p style={{ textAlign: 'center' }}>
-          <b>Yay! You have seen it all</b>
-        </p>
-      }  
+        dataLength={links.length}
+        next={this.fetchData}
+        hasMore={true}
+        loader={<h4 style={{ textAlign: 'center', color: 'lightslategray' }}>Loading...</h4>}
+        endMessage={(
+          <p style={({ textAlign: 'center' })}>
+            <b>Yay! You have seen it all</b>
+          </p>
+        )}
       >
         <section className="feed">
           {links.map((post) => (

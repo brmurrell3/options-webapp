@@ -1,113 +1,144 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-    <link rel="stylesheet" href="/static/css/user.css">
-    <link rel="stylesheet" href="/static/css/style.css">
-    <meta charset="UTF-8">
+  <head>
+    <link rel="stylesheet" href="/static/css/user.css" />
+    <link rel="stylesheet" href="/static/css/style.css" />
+    <meta charset="UTF-8" />
     <title>insta485</title>
     <!-- link the fonts here -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Grand+Hotel&display=swap" rel="stylesheet">
-</head>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Grand+Hotel&display=swap"
+      rel="stylesheet"
+    />
+  </head>
 
-<body>
+  <body>
     <!-- navigation -->
     <header class="header">
-        <nav class="nav-bar">
-            <div class="logo home">
-                <a href="/"><img src="/static/images/name.png" alt="instagram logo"></a>
-                <a href="/" class="sitename"></a>
-            </div>
-            <div class="search">
-                <input class="nav-search" type="text" placeholder="Search">
-            </div>
-            <ul class="nav-links tab">
-                <li><a href="/explore/" class="thick">explore</a></li>
-                <li><a href="/users/{{logname}}/" class="thick">{{logname}}</a></li>
-                <li>
-                    <a href="/users/{{logname}}/">
-                        <img class="nav-pfp" src="{{account_picture}}" alt="{{logname}}-profile-picture">
-                    </a>
-                </li>
-            </ul>
-        </nav>
+      <nav class="nav-bar">
+        <div class="logo home">
+          <a href="/"
+            ><img src="/static/images/name.png" alt="instagram logo"
+          /></a>
+          <a href="/" class="sitename"></a>
+        </div>
+        <div class="search">
+          <input class="nav-search" type="text" placeholder="Search" />
+        </div>
+        <ul class="nav-links tab">
+          <li><a href="/explore/" class="thick">explore</a></li>
+          <li><a href="/users/{{logname}}/" class="thick">{{logname}}</a></li>
+          <li>
+            <a href="/users/{{logname}}/">
+              <img
+                class="nav-pfp"
+                src="{{account_picture}}"
+                alt="{{logname}}-profile-picture"
+              />
+            </a>
+          </li>
+        </ul>
+      </nav>
     </header>
     <div class="spacer"></div>
 
-
     <!-- content -->
     <div class="container">
-        <div class="profile-info">
-            <div class="pfp-container">
-                <img class="user-pfp" src="{{profile_picture}}" alt="{{logname}}-profile-picture">
-            </div>
-            <div class="content-container">
-                <div class="row-one">
-                    <p class="profile-tag">{{username}}</p>
-                    {% if logname == username %}
-                    <div class="edit">
-                        <a class="edit-profile" href="/accounts/edit/">Edit profile</a>
-                    </div>
-                    <!-- DO NOT CHANGE THIS (aside from where we say 'FIXME') -->
-                    <form action="/accounts/logout/" method="post" enctype="multipart/form-data">
-                        <input type="submit" name="logout" value="Logout" />
-                    </form>
-                    {% endif %}
-
-
-
-                </div>
-                <div class="row-two">
-                    <p><strong>{{total_posts}}</strong> {% if total_posts != 1 %} posts {% endif %} {% if total_posts == 1 %} post {% endif %}</p>
-                    
-
-                    <a href="/users/{{username}}/followers/">
-                        <strong>{{followers}} </strong> {% if followers != 1 %} followers {% endif %} {% if followers == 1 %} follower {% endif %}
-                    </a>
-                    <a href="/users/{{username}}/following/"><strong>{{following}}</strong> following</a>
-                </div>
-                <p class="name">{{fullname}}</p>
-                <div class="following-status">
-                    {% if logname_follows_username == True and logname != username %} following
-                    <!-- DO NOT CHANGE THIS (aside from where we say 'FIXME') -->
-                    <form action="/following/?target=/users/{{username}}/" method="post" enctype="multipart/form-data">
-                        <input type="submit" name="unfollow" value="unfollow" />
-                        <input type="hidden" name="username" value="{{username}}" />
-                        <input type="hidden" name="operation" value="unfollow" />
-                    </form>
-                    {% endif %} {% if logname_follows_username == False and logname != username %} not following
-                    <!-- DO NOT CHANGE THIS (aside from where we say 'FIXME') -->
-                    <form action="/following/?target=/users/{{username}}/" method="post" enctype="multipart/form-data">
-                        <input type="submit" name="follow" value="follow" />
-                        <input type="hidden" name="username" value="{{username}}" />
-                        <input type="hidden" name="operation" value="follow" />
-                    </form>
-                    {% endif %}
-                </div>
-            </div>
+      <div class="profile-info">
+        <div class="pfp-container">
+          <img
+            class="user-pfp"
+            src="{{profile_picture}}"
+            alt="{{logname}}-profile-picture"
+          />
         </div>
-        {% if logname == username %}
-        <div class="make-post">
+        <div class="content-container">
+          <div class="row-one">
+            <p class="profile-tag">{{username}}</p>
+            {% if logname == username %}
+            <div class="edit">
+              <a class="edit-profile" href="/accounts/edit/">Edit profile</a>
+            </div>
             <!-- DO NOT CHANGE THIS (aside from where we say 'FIXME') -->
-            <form class="mod" action="/posts/?target=/users/{{username}}/" method="post" enctype="multipart/form-data">
-                <input type="file" name="file" accept="image/*" required/>
-                <input type="submit" name="create_post" value="upload new post" />
-                <input type="hidden" name="operation" value="create" />
+            <form
+              action="/accounts/logout/"
+              method="post"
+              enctype="multipart/form-data"
+            >
+              <input type="submit" name="logout" value="Logout" />
             </form>
+            {% endif %}
+          </div>
+          <div class="row-two">
+            <p>
+              <strong>{{total_posts}}</strong> {% if total_posts != 1 %} posts
+              {% endif %} {% if total_posts == 1 %} post {% endif %}
+            </p>
+
+            <a href="/users/{{username}}/followers/">
+              <strong>{{followers}} </strong> {% if followers != 1 %} followers
+              {% endif %} {% if followers == 1 %} follower {% endif %}
+            </a>
+            <a href="/users/{{username}}/following/"
+              ><strong>{{following}}</strong> following</a
+            >
+          </div>
+          <p class="name">{{fullname}}</p>
+          <div class="following-status">
+            {% if logname_follows_username == True and logname != username %}
+            following
+            <!-- DO NOT CHANGE THIS (aside from where we say 'FIXME') -->
+            <form
+              action="/following/?target=/users/{{username}}/"
+              method="post"
+              enctype="multipart/form-data"
+            >
+              <input type="submit" name="unfollow" value="unfollow" />
+              <input type="hidden" name="username" value="{{username}}" />
+              <input type="hidden" name="operation" value="unfollow" />
+            </form>
+            {% endif %} {% if logname_follows_username == False and logname !=
+            username %} not following
+            <!-- DO NOT CHANGE THIS (aside from where we say 'FIXME') -->
+            <form
+              action="/following/?target=/users/{{username}}/"
+              method="post"
+              enctype="multipart/form-data"
+            >
+              <input type="submit" name="follow" value="follow" />
+              <input type="hidden" name="username" value="{{username}}" />
+              <input type="hidden" name="operation" value="follow" />
+            </form>
+            {% endif %}
+          </div>
         </div>
-        {% endif %}
+      </div>
+      {% if logname == username %}
+      <div class="make-post">
+        <!-- DO NOT CHANGE THIS (aside from where we say 'FIXME') -->
+        <form
+          class="mod"
+          action="/posts/?target=/users/{{username}}/"
+          method="post"
+          enctype="multipart/form-data"
+        >
+          <input type="file" name="file" accept="image/*" required />
+          <input type="submit" name="create_post" value="upload new post" />
+          <input type="hidden" name="operation" value="create" />
+        </form>
+      </div>
+      {% endif %}
     </div>
     <div class="grid-container">
-        <div class="boonk">
-            {% for post in posts %}
-            <a class="post" href="/posts/{{post.postid}}/"> <img src="{{post.img_url}}" alt="image{{postid}}"> </a>
-            {% endfor %}
-        </div>
+      <div class="boonk">
+        {% for post in posts %}
+        <a class="post" href="/posts/{{post.postid}}/">
+          <img src="{{post.img_url}}" alt="image{{postid}}" />
+        </a>
+        {% endfor %}
+      </div>
     </div>
-
-</body>
-
-
+  </body>
 </html>

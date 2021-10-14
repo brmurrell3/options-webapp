@@ -1,82 +1,56 @@
-import React from "react";
-import PropTypes, { string } from "prop-types";
-import moment from "moment";
+import React from 'react';
+import PropTypes from 'prop-types';
+import moment from 'moment';
 
-// might need to make a put resquest here as the data gets updated
-function trigger_like(data) {
-  if (data.self_like) {
-    data.likes = data.likes - 1;
-    data.self_like = false;
-  } else {
-    data.likes = data.likes + 1;
-    data.self_like = true;
+// determines the text on the like button
+function LikeVsUnlike(selfLikeIn) {
+  if (selfLikeIn) {
+    return 'unlike';
+  }
+  return 'like';
+}
+
+// removes vals from arrIn
+function shrinkArray(arrIn, commentIdIn) {
+  for (let i = arrIn.length - 1; i >= 0; i -= 1) {
+    if (arrIn[i].commentid === commentIdIn) {
+      arrIn.splice(i, 1);
+    }
   }
 }
 
-// determines what gets printed in the like/ unlike button
-// function like_vs_unlike(self_like_in) {
-//   if (self_like_in) {
-//     return 'unlike';
-//   }
-//   else {
-//     return 'like';
-//   }
-// }
-
-// prints like vs likes depending on ct
-// function sing_like_vs_plur_likes(likes_in) {
-//   if (likes_in === 1) {
-//     return likes_in + ' like';
-//   }
-//   else {
-//     return likes_in + ' likes';
-//   }
-// }
-
-// decides wether to have a delete button
-function serve_delete_button(lognameOwnsThis) {
-  if (lognameOwnsThis) {
-    return <button className="delete-comment-button">delete</button>;
+// determines wordage attached to num likes
+function singLikeVsPlurLike(likesIn) {
+  if (likesIn === 1) {
+    return `${likesIn} like`;
   }
-}
-
-// displays the comments
-function display_comments(comments) {
-  const listItems = comments.map((d) => (
-    <div key={d.commentid}>
-      <a href={d.ownerShowUrl} className="each-comment" key={d.text}>
-        <strong>{d.owner}</strong> {d.text}
-      </a>
-      {serve_delete_button(d.lognameOwnsThis)}
-    </div>
-  ));
-
-  return <div>{listItems}</div>;
+  return `${likesIn} likes`;
 }
 
 class Post extends React.Component {
-  /* Display number of image and post owner of a single post
-   */
-
   constructor(props) {
     // Initialize mutable state
     super(props);
     this.state = {
-      imgUrl: "",
-      owner: "",
-      timeStamp: "",
-      ownerUrl: "",
-      ownerImgUrl: "",
-      postShowUrl: "",
-      likes: "",
+      imgUrl: '',
+      owner: '',
+      timeStamp: '',
+      ownerUrl: '',
+      ownerImgUrl: '',
+      postShowUrl: '',
+      likes: '',
       lognameLikesThis: true,
-      postid: "",
+      postid: '',
       comments: [],
-      likeid: "",
-      inputText: "",
+      likeid: '',
+      inputText: '',
     };
 
     this.handleChange = this.handleChange.bind(this);
+    this.handleLike = this.handleLike.bind(this);
+    this.handleDoubleClick = this.handleDoubleClick.bind(this);
+    this.createComment = this.createComment.bind(this);
+    this.deleteComment = this.deleteComment.bind(this);
   }
 
   componentDidMount() {
@@ -84,7 +58,7 @@ class Post extends React.Component {
     const { url } = this.props;
 
     // Call REST API to get the post's information
-    fetch(url, { credentials: "same-origin" })
+    fetch(url, { credentials: 'same-origin' })
       .then((response) => {
         if (!response.ok) throw Error(response.statusText);
         return response.json();
@@ -107,132 +81,110 @@ class Post extends React.Component {
       .catch((error) => console.log(error));
   }
 
-  //////////////////////////////////////////////helper functions//////////////////////////////////////////////
-  // determines the text on the like button
-  like_vs_unlike = (self_like_in) => {
-    if (self_like_in) {
-      return "unlike";
-    } else {
-      return "like";
-    }
-  };
-
-  // determines wordage attached to num likes
-  sing_like_vs_plur_likes = (likes_in) => {
-    if (likes_in === 1) {
-      return likes_in + " like";
-    } else {
-      return likes_in + " likes";
-    }
-  };
-
-  // decides wether to have a delete button
-  serve_delete_button = (lognameOwnsThis, commentid) => {
-    if (lognameOwnsThis) {
-      return (
-        <button
-          className="delete-comment-button"
-          onClick={() => this.deleteComment(commentid)}
-        >
-          delete
-        </button>
-      );
-    }
-  };
-
-  // displays the comments
-  display_comments = (comments) => {
-    const listItems = comments.map((d) => (
-      <div key={d.commentid} className="each-comment">
-        <a href={d.ownerShowUrl} key={d.commentid}>
-          <strong>{d.owner}</strong>{` ${d.text}`}
-        </a>
-        {this.serve_delete_button(d.lognameOwnsThis, d.commentid)}
-      </div>
-    ));
-
-    return <div>{listItems}</div>;
-  };
-
-  // removes vals from arr_in
-  shrink_array = (arr_in, commentid_in) => {
-    for (var i = arr_in.length - 1; i >= 0; --i) {
-      if (arr_in[i].commentid == commentid_in) {
-        arr_in.splice(i, 1);
-      }
-    }
-  };
-
-  //////////////////////////////////////////////like/unlike functions//////////////////////////////////////////////
-
   // handles the click of the like button
-  handleLike = () => {
-    if (this.state.lognameLikesThis) {
-      let deleter = this.state.likeid;
-      fetch(deleter, { credentials: "same-origin", method: "DELETE" })
+  handleLike() {
+    const {
+      likeid,
+      likes,
+      postid,
+      lognameLikesThis,
+    } = this.state;
+    if (lognameLikesThis) {
+      const deleter = likeid;
+      fetch(deleter, { credentials: 'same-origin', method: 'DELETE' })
         .then((response) => {
           if (!response.ok) throw Error(response.statusText);
           // return response.json();
         })
         .catch((error) => console.log(error));
       this.setState({
-        likes: this.state.likes - 1,
+        likes: likes - 1,
         lognameLikesThis: false,
       });
     } else {
-      let add_like_url = "api/v1/likes/?postid=" + this.state.postid;
-      fetch(add_like_url, { credentials: "same-origin", method: "POST" }) // POST REQUEST
+      const addLikeUrl = `api/v1/likes/?postid=${postid}`;
+      fetch(addLikeUrl, { credentials: 'same-origin', method: 'POST' }) // POST REQUEST
         .then((response) => {
           if (!response.ok) throw Error(response.statusText);
           return response.json();
         })
         .then((data) => {
           this.setState({
-            likes: this.state.likes + 1,
+            likes: likes + 1,
             lognameLikesThis: true,
-            likeid: "/api/v1/likes/" + data.likeid + "/",
+            likeid: `/api/v1/likes/${data.likeid}/`,
           });
         })
         .catch((error) => console.log(error));
     }
-  };
+  }
 
   // allows the double clicking of an image
   // OPtional add a like animation
-  handleDoubleClick = () => {
-    if (this.state.lognameLikesThis) {
-    } else {
-      let add_like_url = "api/v1/likes/?postid=" + this.state.postid;
-      fetch(add_like_url, { credentials: "same-origin", method: "POST" }) // POST REQUEST
+  handleDoubleClick() {
+    const { lognameLikesThis, postid, likes } = this.state;
+    if (lognameLikesThis === false) {
+      const addLikeUrl = `api/v1/likes/?postid=${postid}`;
+      fetch(addLikeUrl, { credentials: 'same-origin', method: 'POST' }) // POST REQUEST
         .then((response) => {
           if (!response.ok) throw Error(response.statusText);
           return response.json();
         })
         .then((data) => {
           this.setState({
-            likes: this.state.likes + 1,
+            likes: likes + 1,
             lognameLikesThis: true,
-            likeid: "/api/v1/likes/" + data.likeid + "/",
+            likeid: `/api/v1/likes/${data.likeid}/`,
           });
-          // console.log("via delte url---" this.state.likeid);
         })
         .catch((error) => console.log(error));
     }
-  };
-  //////////////////////////////////////COMMENTS FUNCTIONS///////////////////////////////////////////
+  }
+
   handleChange(event) {
     this.setState({ inputText: event.target.value });
   }
 
-  createComment = (event) => {
+  // displays the comments
+  displayComment(comments) {
+    const listItems = comments.map((d) => (
+      <div key={d.commentid} className="each-comment">
+        <a href={d.ownerShowUrl} key={d.commentid}>
+          <strong>{d.owner}</strong>
+          {` ${d.text}`}
+        </a>
+        {this.serveDeleteButton(d.lognameOwnsThis, d.commentid)}
+      </div>
+    ));
+    return (<div>{listItems}</div>);
+  }
+
+  // decides wether to have a delete button
+  serveDeleteButton(lognameOwnsThis, commentid) {
+    if (lognameOwnsThis) {
+      return (
+        <button
+          className="delete-comment-button"
+          onClick={() => this.deleteComment(commentid)}
+          type="button"
+        >
+          delete
+        </button>
+      );
+    }
+    return (null);
+  }
+
+  createComment(event) {
+    const { postid, comments, inputText } = this.state;
     event.preventDefault();
-    let comments_url = "api/v1/comments/?postid=" + this.state.postid;
-    fetch(comments_url, {
-      "Content-Type": "application/json",
-      credentials: "same-origin",
-      method: "POST",
+    const commentsUrl = `api/v1/comments/?postid=${postid}`;
+    fetch(commentsUrl, {
+      'Content-Type': 'application/json',
+      credentials: 'same-origin',
+      method: 'POST',
       body: JSON.stringify({
-        text: this.state.inputText,
+        text: inputText,
       }),
     }) // POST REQUEST
       .then((response) => {
@@ -241,38 +193,38 @@ class Post extends React.Component {
       })
       .then((data) => {
         this.setState({
-          comments: this.state.comments.concat({
-            text: this.state.inputText,
+          comments: comments.concat({
+            text: inputText,
             owner: data.owner,
             ownerShowUrl: data.ownerShowUrl,
             lognameOwnsThis: data.lognameOwnsThis,
             commentid: data.commentid,
             url: data.url,
           }),
-          inputText: "",
+          inputText: '',
         });
-        // console.log("via delte url---" this.state.likeid);
+        // console.log('via delte url---' this.state.likeid);
         console.log(data);
       })
       .catch((error) => console.log(error));
-  };
+  }
 
   // deletes a comment
-  deleteComment = (commentid_in) => {
-    console.log("entered here");
-    console.log(commentid_in);
-    let deleter = "/api/v1/comments/" + commentid_in + "/";
-    fetch(deleter, { credentials: "same-origin", method: "DELETE" })
+  deleteComment(commentIdIn) {
+    const { comments } = this.state;
+    const deleter = `/api/v1/comments/${commentIdIn}/`;
+    fetch(deleter, { credentials: 'same-origin', method: 'DELETE' })
       .then((response) => {
         if (!response.ok) throw Error(response.statusText);
         // return response.json();
       })
       .catch((error) => console.log(error));
-    this.shrink_array(this.state.comments, commentid_in);
+    shrinkArray(comments, commentIdIn);
+    const temp = comments;
     this.setState({
-      comments: this.state.comments,
+      comments: temp,
     });
-  };
+  }
 
   render() {
     // This line automatically assigns this.state.imgUrl to the const variable imgUrl
@@ -297,7 +249,7 @@ class Post extends React.Component {
         <div className="wrapper">
           <div className="container">
             <a href={ownerUrl}>
-              <img className="pfp" src={ownerImgUrl} alt="profile-picture" />
+              <img className="pfp" src={ownerImgUrl} alt="profile" />
             </a>
             <div className="account">
               <a href={ownerUrl} className="username">
@@ -311,7 +263,7 @@ class Post extends React.Component {
             </div>
           </div>
           <div className="picture" onDoubleClick={this.handleDoubleClick}>
-            <img src={imgUrl} alt="image" />
+            <img src={imgUrl} alt="post-body" />
           </div>
           <div className="container-bottom">
             {/* like and unlike button */}
@@ -321,13 +273,13 @@ class Post extends React.Component {
                 onClick={this.handleLike}
                 type="button"
               >
-                {this.like_vs_unlike(lognameLikesThis)}
+                {LikeVsUnlike(lognameLikesThis)}
               </button>
               {/* number of likes */}
-              <div className="likes">{this.sing_like_vs_plur_likes(likes)}</div>
+              <div className="likes">{singLikeVsPlurLike(likes)}</div>
             </div>
             {/* generated comments */}
-            <div className="comments">{this.display_comments(comments)}</div>
+            <div className="comments">{this.displayComment(comments)}</div>
             {/* replies */}
             <div className="reply">
               <form className="comment-form" onSubmit={this.createComment}>
