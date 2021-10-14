@@ -1,47 +1,54 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <title>insta485</title>
+  </head>
 
-<head>
-
-    <title> insta485 </title>
-
-</head>
-
-<body>
-
-    <h1> following </h1>
+  <body>
+    <h1>following</h1>
 
     <p>
-        <a href="/"> insta 485 </a>
+      <a href="/"> insta 485 </a>
     </p>
 
     <p>
-        <a href="/explore/"> explore </a>
-        <a href="/users/{{logname}}/"> {{logname}} </a>
+      <a href="/explore/"> explore </a>
+      <a href="/users/{{logname}}/"> {{logname}} </a>
     </p>
 
     {% for follow in following %}
     <div>
-
-        <img src="{{follow.user_img_url}}" alt="user image" style="width:50px;height:50px;">
-        <a href="/users/{{follow.username}}/"> {{follow.username}} </a> {% if follow.logname_follows_username == True and logname != follow.username %} following
-        <!-- DO NOT CHANGE THIS (aside from where we say 'FIXME') -->
-        <form action="/following/?target=/users/{{user}}/following/" method="post" enctype="multipart/form-data">
-            <input type="submit" name="unfollow" value="unfollow" />
-            <input type="hidden" name="username" value="{{follow.username}}" />
-            <input type="hidden" name="operation" value="unfollow" />
-        </form>
-        {% endif %} {% if follow.logname_follows_username == False and logname != follow.username %} not following
-        <form action="/following/?target=/users/{{user}}/following/" method="post" enctype="multipart/form-data">
-            <input type="submit" name="follow" value="follow" />
-            <input type="hidden" name="username" value="{{follow.username}}" />
-            <input type="hidden" name="operation" value="follow" />
-        </form>
-        {% endif %}
-
+      <img
+        src="{{follow.user_img_url}}"
+        alt="user image"
+        style="width: 50px; height: 50px"
+      />
+      <a href="/users/{{follow.username}}/"> {{follow.username}} </a> {% if
+      follow.logname_follows_username == True and logname != follow.username %}
+      following
+      <!-- DO NOT CHANGE THIS (aside from where we say 'FIXME') -->
+      <form
+        action="/following/?target=/users/{{user}}/following/"
+        method="post"
+        enctype="multipart/form-data"
+      >
+        <input type="submit" name="unfollow" value="unfollow" />
+        <input type="hidden" name="username" value="{{follow.username}}" />
+        <input type="hidden" name="operation" value="unfollow" />
+      </form>
+      {% endif %} {% if follow.logname_follows_username == False and logname !=
+      follow.username %} not following
+      <form
+        action="/following/?target=/users/{{user}}/following/"
+        method="post"
+        enctype="multipart/form-data"
+      >
+        <input type="submit" name="follow" value="follow" />
+        <input type="hidden" name="username" value="{{follow.username}}" />
+        <input type="hidden" name="operation" value="follow" />
+      </form>
+      {% endif %}
     </div>
     {% endfor %}
-
-</body>
-
+  </body>
 </html>
