@@ -55,30 +55,22 @@ class Post extends React.Component {
 
   componentDidMount() {
     // This line automatically assigns this.props.url to the const variable url
-    const { url } = this.props;
-
-    // Call REST API to get the post's information
-    fetch(url, { credentials: 'same-origin' })
-      .then((response) => {
-        if (!response.ok) throw Error(response.statusText);
-        return response.json();
-      })
-      .then((data) => {
-        this.setState({
-          imgUrl: data.imgUrl,
-          owner: data.owner,
-          timeStamp: moment.utc(data.created).fromNow(),
-          ownerUrl: data.ownerShowUrl,
-          ownerImgUrl: data.ownerImgUrl,
-          postShowUrl: data.postShowUrl,
-          likes: data.likes.numLikes,
-          lognameLikesThis: data.likes.lognameLikesThis,
-          postid: data.postid,
-          comments: [...data.comments],
-          likeid: data.likes.url,
-        });
-      })
-      .catch((error) => console.log(error));
+    const { data } = this.props;
+    // console.log(JSON.parse(JSON.stringify(data)));
+    const mod = JSON.parse(data);
+    this.setState({
+      imgUrl: mod.imgUrl,
+      owner: mod.owner,
+      timeStamp: moment.utc(mod.created).fromNow(),
+      ownerUrl: mod.ownerShowUrl,
+      ownerImgUrl: mod.ownerImgUrl,
+      postShowUrl: mod.postShowUrl,
+      likes: mod.likes.numLikes,
+      lognameLikesThis: mod.likes.lognameLikesThis,
+      postid: mod.postid,
+      comments: [...mod.comments],
+      likeid: mod.likes.url,
+    });
   }
 
   // handles the click of the like button
@@ -203,8 +195,6 @@ class Post extends React.Component {
           }),
           inputText: '',
         });
-        // console.log('via delte url---' this.state.likeid);
-        console.log(data);
       })
       .catch((error) => console.log(error));
   }
@@ -300,7 +290,7 @@ class Post extends React.Component {
 }
 
 Post.propTypes = {
-  url: PropTypes.string.isRequired,
+  data: PropTypes.string.isRequired,
 };
 
 export default Post;

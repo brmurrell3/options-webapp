@@ -18,18 +18,16 @@ class Batch extends React.Component {
         return response.json();
       })
       .then((data) => {
-        console.log(data);
         this.setState({
           links: data.results,
           next: data.next,
         });
-        console.log(data.next);
       })
       .catch((error) => console.log(error));
   }
 
   fetchData() {
-    const { next, links } = this.state;
+    const { next } = this.state;
     fetch(next, { credentials: 'same-origin', method: 'GET' })
       .then((response) => {
         if (!response.ok) throw Error(response.statusText);
@@ -40,7 +38,6 @@ class Batch extends React.Component {
           links: prevState.links.concat(data.results),
           next: data.next,
         }));
-        console.log(links);
       })
       .catch((error) => console.log(error));
   }
@@ -62,7 +59,7 @@ class Batch extends React.Component {
         <section className="feed">
           {links.map((post) => (
             <div key={post.postid}>
-              <Post url={post.url} />
+              <Post data={JSON.stringify(post)} />
             </div>
           ))}
         </section>
