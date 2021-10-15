@@ -7,6 +7,7 @@ class Batch extends React.Component {
   constructor(props) {
     super(props);
     this.state = { links: [], next: '' };
+    this.fetchData = this.fetchData.bind(this);
   }
 
   componentDidMount() {
@@ -22,6 +23,7 @@ class Batch extends React.Component {
           links: data.results,
           next: data.next,
         });
+        console.log(data.next);
       })
       .catch((error) => console.log(error));
   }
@@ -34,22 +36,22 @@ class Batch extends React.Component {
         return response.json();
       })
       .then((data) => {
-        console.log(data.results);
-        this.setState({
-          links: links.concat(data.results),
+        this.setState((prevState) => ({
+          links: prevState.links.concat(data.results),
           next: data.next,
-        });
+        }));
+        console.log(links);
       })
       .catch((error) => console.log(error));
   }
 
   render() {
-    const { links } = this.state;
+    const { links, next } = this.state;
     return (
       <InfiniteScroll
         dataLength={links.length}
         next={this.fetchData}
-        hasMore={true}
+        hasMore={next}
         loader={<h4 style={{ textAlign: 'center', color: 'lightslategray' }}>Loading...</h4>}
         endMessage={(
           <p style={({ textAlign: 'center' })}>
@@ -59,7 +61,7 @@ class Batch extends React.Component {
       >
         <section className="feed">
           {links.map((post) => (
-            <div className="">
+            <div key={post.postid}>
               <Post url={post.url} />
             </div>
           ))}
