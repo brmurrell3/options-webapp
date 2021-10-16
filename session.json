@@ -1,8 +1,8 @@
 {
     "__meta__": {
         "about": "HTTPie session file",
-        "help": "https://httpie.org/doc#sessions",
-        "httpie": "2.5.0"
+        "help": "https://httpie.io/docs#sessions",
+        "httpie": "2.6.0"
     },
     "auth": {
         "password": null,
@@ -14,7 +14,7 @@
             "expires": null,
             "path": "/",
             "secure": false,
-            "value": "eyJ1c2VybmFtZSI6ImF3ZGVvcmlvIn0.YV9dCQ.x2rR44-MGMquAPrJ433QHj3emh4"
+            "value": "eyJ1c2VybmFtZSI6ImF3ZGVvcmlvIn0.YWsgzg.shj_wcVS1oDugMkgZGz8Lk7HL7E"
         }
     },
     "headers": {}

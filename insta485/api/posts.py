@@ -23,7 +23,7 @@ def login(connection):
         password = flask.request.authorization['password']
     elif (request.form.get('username') is not None
             and request.form.get('password') is not None
-            and request.form.get('username') == 'login'):
+            and request.form.get('operation') == 'login'):
         username = request.form.get('username')
         password = request.form.get('password')
     elif 'username' in flask.session:
@@ -90,7 +90,7 @@ def post_info(connection, postid_url_slug, logname):
     context['ownerImgUrl'] = '/uploads/' + str(post[0]['owner_img_url'])
     context['ownerShowUrl'] = '/users/' + str(post[0]['owner']) + '/'
     context['postShowUrl'] = f'/posts/{postid_url_slug}/'
-    context['postid'] = postid_url_slug
+    context['postid'] = int(postid_url_slug)
     context['url'] = flask.request.path
     context['comments'] = []
     context['likes'] = {}
@@ -219,10 +219,12 @@ def get_post(postid_url_slug):
         return flask.jsonify(**logname), 403
     size = (connection.execute(
         "SELECT "
-        "COUNT(postid) AS num "
+        "postid "
         "FROM posts "
+        "WHERE postid=:id ",
+        {"id": postid_url_slug}
     )).fetchall()
-    if int(size[0]['num']) < int(postid_url_slug):
+    if len(size) == 0:
         context = {}
         context['message'] = "Not found"
         context['status_code'] = 404
@@ -234,18 +236,21 @@ def get_post(postid_url_slug):
 @insta485.app.route('/api/v1/likes/', methods=['POST'])
 def add_like():
     """Add like."""
-    postid_url_slug = request.args.get('postid')
-    connection = insta485.model.get_db()
+    postid_url_slug = int(request.args.get('postid'))
     context = {}
+    connection = insta485.model.get_db()
     logname = login(connection)
     if isinstance(logname, dict):
         return flask.jsonify(**logname), 403
     size = (connection.execute(
         "SELECT "
-        "COUNT(postid) AS num "
+        "postid "
         "FROM posts "
+        "WHERE postid=:id ",
+        {"id": postid_url_slug}
     )).fetchall()
-    if int(size[0]['num']) < int(postid_url_slug):
+    if len(size) == 0:
+        context = {}
         context['message'] = "Not found"
         context['status_code'] = 404
         return flask.jsonify(**context), 404
@@ -298,17 +303,20 @@ def add_comment():
     postid_url_slug = request.args.get('postid')
     request_content = request.get_json(force=True)
     text = request_content['text']
-    connection = insta485.model.get_db()
     context = {}
+    connection = insta485.model.get_db()
     logname = login(connection)
     if isinstance(logname, dict):
         return flask.jsonify(**logname), 403
     size = (connection.execute(
         "SELECT "
-        "COUNT(postid) AS num "
+        "postid "
         "FROM posts "
+        "WHERE postid=:id ",
+        {"id": postid_url_slug}
     )).fetchall()
-    if int(size[0]['num']) < int(postid_url_slug):
+    if len(size) == 0:
+        context = {}
         context['message'] = "Not found"
         context['status_code'] = 404
         return flask.jsonify(**context), 404
