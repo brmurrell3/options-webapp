@@ -4,26 +4,38 @@ import InfiniteScroll from 'react-infinite-scroll-component';
 import Post from './post';
 
 class Batch extends React.Component {
+
   constructor(props) {
-    super(props);
+    super(props); 
     this.state = { links: [], next: '' };
     this.fetchData = this.fetchData.bind(this);
   }
 
   componentDidMount() {
-    const { url } = this.props;
-    fetch(url, { credentials: 'same-origin', method: 'GET' })
-      .then((response) => {
-        if (!response.ok) throw Error(response.statusText);
-        return response.json();
+
+    if (String(window.performance.getEntriesByType("navigation")[0].type) === "back_forward") {
+      console.log(history.state);
+      const saveFile = history.state;
+      this.setState({
+        links: saveFile.links,
+        next: saveFile.next,
       })
-      .then((data) => {
-        this.setState({
-          links: data.results,
-          next: data.next,
-        });
-      })
-      .catch((error) => console.log(error));
+    }
+    else {
+      const { url } = this.props;
+      fetch(url, { credentials: 'same-origin', method: 'GET' })
+        .then((response) => {
+          if (!response.ok) throw Error(response.statusText);
+          return response.json();
+        })
+        .then((data) => {
+          this.setState({
+            links: data.results,
+            next: data.next,
+          });
+        })
+        .catch((error) => console.log(error));
+    }
   }
 
   fetchData() {
@@ -40,6 +52,7 @@ class Batch extends React.Component {
         }));
       })
       .catch((error) => console.log(error));
+      history.pushState(this.state, "");
   }
 
   render() {

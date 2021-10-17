@@ -6,7 +6,6 @@ import Batch from './middle';
 // {/* <Post url="/api/v1/posts/1/" />, */}
 
 window.onbeforeunload = function () {
-  console.log("jumping to top");
   window.scrollTo(0, 0);
 }
 
