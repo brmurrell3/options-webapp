@@ -7,7 +7,7 @@ import Batch from './middle';
 
 window.onbeforeunload = function () {
   window.scrollTo(0, 0);
-}
+};
 
 ReactDOM.render(
   // Insert the post component into the DOM

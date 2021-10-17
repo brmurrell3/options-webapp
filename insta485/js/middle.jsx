@@ -4,24 +4,20 @@ import InfiniteScroll from 'react-infinite-scroll-component';
 import Post from './post';
 
 class Batch extends React.Component {
-
   constructor(props) {
-    super(props); 
+    super(props);
     this.state = { links: [], next: '' };
     this.fetchData = this.fetchData.bind(this);
   }
 
   componentDidMount() {
-
-    if (String(window.performance.getEntriesByType("navigation")[0].type) === "back_forward") {
-      console.log(history.state);
-      const saveFile = history.state;
+    if (String(window.performance.getEntriesByType('navigation')[0].type) === 'back_forward') {
+      const saveFile = window.history.state;
       this.setState({
         links: saveFile.links,
         next: saveFile.next,
-      })
-    }
-    else {
+      });
+    } else {
       const { url } = this.props;
       fetch(url, { credentials: 'same-origin', method: 'GET' })
         .then((response) => {
@@ -52,7 +48,7 @@ class Batch extends React.Component {
         }));
       })
       .catch((error) => console.log(error));
-      history.pushState(this.state, "");
+    window.history.pushState(this.state, '');
   }
 
   render() {
